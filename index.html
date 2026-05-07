@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ИБ-Академия — Информационная безопасность для сотрудников</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050b14;
+      --surface: #0d1a2b;
+      --surface2: #112236;
+      --accent: #00d4ff;
+      --accent2: #0077ff;
+      --danger: #ff3b5c;
+      --success: #00e5a0;
+      --text: #c8dce8;
+      --text-dim: #6b8ba4;
+      --border: rgba(0, 212, 255, 0.15);
+      --glow: 0 0 30px rgba(0, 212, 255, 0.2);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 4rem;
+      background: rgba(5, 11, 20, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--text); }
+
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+
+    .nav-links a {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .hero-orb {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,119,255,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    .hero-orb2 {
+      position: absolute;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+      top: 30%; right: 15%;
+      animation: pulse 6s ease-in-out infinite reverse;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+      50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+    }
+
+    .shield-icon {
+      width: 90px; height: 90px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+
+    .shield-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 20px rgba(0,212,255,0.5)); }
+
+    .hero-badge {
+      display: inline-block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--border);
+      padding: 0.4rem 1.2rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      background: rgba(0,212,255,0.05);
+    }
+
+    h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: 1px;
+      margin-bottom: 1.5rem;
+      color: #fff;
+    }
+
+    h1 .accent { color: var(--accent); }
+
+    .hero p {
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.8;
+    }
+
+    .btn-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    .btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.85rem 2.2rem;
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s;
+      display: inline-block;
+      position: relative;
+      z-index: 2;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: #fff;
+      box-shadow: 0 0 30px rgba(0,212,255,0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .btn-outline:hover {
+      background: rgba(0,212,255,0.1);
+    }
+
+    .stats {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat {
+      background: var(--bg);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      margin-top: 0.5rem;
+    }
+
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 6rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.8rem;
+    }
+
+    h2 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+      letter-spacing: 0.5px;
+    }
+
+    .section-desc {
+      font-size: 1rem;
+      color: var(--text-dim);
+      max-width: 600px;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+    }
+
+    .threats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .threat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    .threat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--accent);
+      transform: scaleY(0);
+      transition: transform 0.3s;
+    }
+
+    .threat-card:hover {
+      border-color: rgba(0,212,255,0.4);
+      transform: translateY(-4px);
+      box-shadow: var(--glow);
+    }
+
+    .threat-card:hover::before { transform: scaleY(1); }
+
+    .threat-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .threat-card h3 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .threat-card p {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .threat-level {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 1rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+    }
+
+    .level-high { background: rgba(255,59,92,0.15); color: var(--danger); }
+    .level-med  { background: rgba(255,165,0,0.15);  color: #ffa500; }
+    .level-low  { background: rgba(0,229,160,0.15);  color: var(--success); }
+
+    .modules-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .module-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.5rem 2rem;
+      transition: all 0.25s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .module-row:hover {
+      border-color: rgba(0,212,255,0.4);
+      background: var(--surface2);
+      transform: translateX(4px);
+    }
+
+    .module-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: rgba(0,212,255,0.2);
+      width: 2.5rem;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .module-info h3 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.3px;
+    }
+
+    .module-info .module-desc {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-bottom: 0.4rem;
+      line-height: 1.5;
+    }
+
+    .module-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .module-tag {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      background: rgba(0,212,255,0.08);
+      color: var(--accent);
+      border: 1px solid rgba(0,212,255,0.2);
+    }
+
+    .module-meta {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.4rem;
+      min-width: 90px;
+    }
+
+    .module-duration {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    .module-play {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: color 0.2s;
+    }
+
+    .module-row:hover .module-play { color: var(--accent); }
+
+    .module-play svg { width: 14px; height: 14px; }
+
+    .quiz-wrapper {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 3rem;
+      max-width: 1072px;
+    }
+
+    .quiz-progress-bar-wrap {
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-bottom: 0.8rem;
+    }
+
+    .quiz-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      border-radius: 2px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .quiz-progress-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    .quiz-question {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+
+    .quiz-module-tag {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.8rem;
+      display: block;
+      opacity: 0.7;
+    }
+
+    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .quiz-option {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--text);
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .quiz-option:hover:not(:disabled) { border-color: var(--accent); color: #fff; }
+    .quiz-option.correct { border-color: var(--success); background: rgba(0,229,160,0.1); color: var(--success); cursor: default; }
+    .quiz-option.wrong   { border-color: var(--danger);  background: rgba(255,59,92,0.1);  color: var(--danger); cursor: default; }
+    .quiz-option:disabled { cursor: default; }
+
+    .quiz-feedback {
+      margin-top: 1.5rem;
+      padding: 1rem 1.5rem;
+      border-radius: 3px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.ok  { background: rgba(0,229,160,0.1); border: 1px solid var(--success); color: var(--success); }
+    .quiz-feedback.err { background: rgba(255,59,92,0.1);  border: 1px solid var(--danger);  color: var(--danger); }
+
+    .quiz-nav {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 2rem;
+    }
+
+    .quiz-result-score {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 5rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-align: center;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .quiz-result-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .quiz-result-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .breakdown-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1rem 1.25rem;
+    }
+
+    .breakdown-item .b-module {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.4rem;
+    }
+
+    .breakdown-item .b-score {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .b-score.great { color: var(--success); }
+    .b-score.ok    { color: #ffa500; }
+    .b-score.bad   { color: var(--danger); }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .tip-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tip-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+    }
+
+    .tip-icon { font-size: 1.5rem; margin-bottom: 1rem; display: block; }
+
+    .tip-card h3 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .tip-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 3rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .footer-logo {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 2px;
+    }
+
+    .footer-credits {
+      text-align: right;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
+    .footer-credits strong {
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+    }
+
+    .footer-copy {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      opacity: 0.5;
+    }
+
+    .section-divider {
+      position: relative;
+      z-index: 1;
+      height: 1px;
+      background: var(--border);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 4rem 1.5rem; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+      .footer-credits { text-align: center; }
+      .module-row { grid-template-columns: 1fr; }
+      .module-num { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="#"><span>ИБ</span>Академия</a>
+    <ul class="nav-links">
+      <li><a href="#threats">Угрозы</a></li>
+      <li><a href="#modules">Обучение</a></li>
+      <li><a href="#quiz">Тест</a></li>
+      <li><a href="#tips">Советы</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-orb"></div>
+    <div class="hero-orb2"></div>
+    <div>
+      <div class="shield-icon">
+        <svg viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M40 4L8 18V44C8 62 24 77 40 86C56 77 72 62 72 44V18L40 4Z" stroke="#00d4ff" stroke-width="2" fill="rgba(0,212,255,0.05)"/>
+          <path d="M40 18L22 26V42C22 54 30 64 40 70C50 64 58 54 58 42V26L40 18Z" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="4 3" fill="rgba(0,212,255,0.03)"/>
+          <path d="M30 42L37 49L52 34" stroke="#00e5a0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="hero-badge">Информационная безопасность</div>
+      <h1>Защити организацию —<br><span class="accent">обучи сотрудников</span></h1>
+      <p>Комплексная платформа для информирования и обучения персонала по вопросам информационной безопасности. От базовых угроз до сложных сценариев атак.</p>
+      <div class="btn-group">
+        <a class="btn btn-primary" href="#modules">Начать обучение</a>
+        <a class="btn btn-outline" href="#quiz">Пройти тест</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat fade-in">
+      <span class="stat-num">91%</span>
+      <div class="stat-label">кибератак начинается с фишинга</div>
+    </div>
+    <div class="stat fade-in">
+      <span class="stat-num">95%</span>
+      <div class="stat-label">инцидентов — из-за ошибок людей</div>
+    </div>
+    <div class="stat fade-in">
+      <span class="stat-num">70%</span>
+      <div class="stat-label">снижение рисков после обучения</div>
+    </div>
+    <div class="stat fade-in">
+      <span class="stat-num">4.5M₽</span>
+      <div class="stat-label">средний ущерб от одного инцидента</div>
+    </div>
+  </div>
+
+  <section id="threats">
+    <div class="section-label">// Актуальные угрозы</div>
+    <h2>Что угрожает вашей организации?</h2>
+    <p class="section-desc">Современные киберугрозы становятся всё сложнее. Сотрудники — первый и самый уязвимый рубеж защиты.</p>
+
+    <div class="threats-grid">
+      <div class="threat-card fade-in">
+        <span class="threat-icon">🎣</span>
+        <h3>Фишинг и социальная инженерия</h3>
+        <p>Мошеннические письма, звонки и сообщения, направленные на кражу учётных данных и получение несанкционированного доступа.</p>
+        <span class="threat-level level-high">● Высокий риск</span>
+      </div>
+      <div class="threat-card fade-in">
+        <span class="threat-icon">🔒</span>
+        <h3>Программы-вымогатели</h3>
+        <p>Вредоносное ПО, шифрующее данные организации и требующее выкуп. Распространяется через заражённые вложения и ссылки.</p>
+        <span class="threat-level level-high">● Высокий риск</span>
+      </div>
+      <div class="threat-card fade-in">
+        <span class="threat-icon">🕵️</span>
+        <h3>Утечки конфиденциальных данных</h3>
+        <p>Случайная или преднамеренная передача корпоративной информации третьим лицам через почту, мессенджеры или USB-носители.</p>
+        <span class="threat-level level-med">● Средний риск</span>
+      </div>
+      <div class="threat-card fade-in">
+        <span class="threat-icon">🔑</span>
+        <h3>Слабые и скомпрометированные пароли</h3>
+        <p>Использование простых или повторяющихся паролей открывает злоумышленникам доступ к корпоративным системам.</p>
+        <span class="threat-level level-med">● Средний риск</span>
+      </div>
+      <div class="threat-card fade-in">
+        <span class="threat-icon">📡</span>
+        <h3>Небезопасные сети и удалённый доступ</h3>
+        <p>Подключение к рабочим ресурсам через общедоступный Wi-Fi без VPN создаёт риск перехвата данных.</p>
+        <span class="threat-level level-med">● Средний риск</span>
+      </div>
+      <div class="threat-card fade-in">
+        <span class="threat-icon">💾</span>
+        <h3>Вредоносные устройства и ПО</h3>
+        <p>Подключение сторонних накопителей или установка непроверенного ПО может внести в систему вирусы и трояны.</p>
+        <span class="threat-level level-low">● Управляемый риск</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="modules">
+    <div class="section-label">// Программа обучения</div>
+    <h2>Учебные модули</h2>
+    <p class="section-desc">Структурированная программа охватывает все ключевые аспекты информационной безопасности — от основ до продвинутых практик.</p>
+
+    <div class="modules-list">
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=FTQVqiIa754" target="_blank" rel="noopener">
+        <div class="module-num">01</div>
+        <div class="module-info">
+          <h3>Введение в информационную безопасность</h3>
+          <div class="module-desc">Базовые понятия ИБ, CIA-триада, виды угроз и роль сотрудника в защите организации</div>
+          <div class="module-tags">
+            <span class="module-tag">Базовый</span>
+            <span class="module-tag">Лекция</span>
+          </div>
+        </div>
+        <div class="module-meta">
+          <div class="module-duration">⏱ 11:12</div>
+          <div class="module-play">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Смотреть
+          </div>
+        </div>
+      </a>
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=cB1X_bADIYA" target="_blank" rel="noopener">
+        <div class="module-num">02</div>
+        <div class="module-info">
+          <h3>Распознавание фишинговых атак</h3>
+          <div class="module-desc">Геймификация и симуляции фишинга — какие методы обучения реально меняют поведение сотрудников</div>
+          <div class="module-tags">
+            <span class="module-tag">Базовый</span>
+            <span class="module-tag">Практика</span>
+          </div>
+        </div>
+        <div class="module-meta">
+          <div class="module-duration">⏱ 18:44</div>
+          <div class="module-play">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Смотреть
+          </div>
+        </div>
+      </a>
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=8Q-TrSX521A" target="_blank" rel="noopener">
+        <div class="module-num">03</div>
+        <div class="module-info">
+          <h3>Управление паролями и аутентификация</h3>
+          <div class="module-desc">Базовые термины ИБ, надёжные пароли, двухфакторная аутентификация и менеджеры паролей</div>
+          <div class="module-tags">
+            <span class="module-tag">Базовый</span>
+            <span class="module-tag">Практика</span>
+          </div>
+        </div>
+        <div class="module-meta">
+          <div class="module-duration">⏱ 11:30</div>
+          <div class="module-play">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Смотреть
+          </div>
+        </div>
+      </a>
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=TIR95rkRxEI" target="_blank" rel="noopener">
+        <div class="module-num">04</div>
+        <div class="module-info">
+          <h3>Безопасная работа с данными</h3>
+          <div class="module-desc">Электронный курс Safety Skills — утечки данных по вине сотрудников, классификация и правила работы с информацией</div>
+          <div class="module-tags">
+            <span class="module-tag">Средний</span>
+            <span class="module-tag">Курс</span>
+          </div>
+        </div>
+        <div class="module-meta">
+          <div class="module-duration">⏱ 2:26</div>
+          <div class="module-play">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Смотреть
+          </div>
+        </div>
+      </a>
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=Tiu_rm_WdsQ" target="_blank" rel="noopener">
+        <div class="module-num">05</div>
+        <div class="module-info">
+          <h3>Реагирование на инциденты</h3>
+          <div class="module-desc">Основы защиты информации — порядок действий при угрозах, эскалация и документирование инцидентов</div>
+          <div class="module-tags">
+            <span class="module-tag">Средний</span>
+            <span class="module-tag">Лекция</span>
+          </div>
+        </div>
+        <div class="module-meta">
+          <div class="module-duration">⏱ 12:37</div>
+          <div class="module-play">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Смотреть
+          </div>
+        </div>
+      </a>
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=7zSlz60I2Fg" target="_blank" rel="noopener">
+        <div class="module-num">06</div>
+        <div class="module-info">
+          <h3>Физическая безопасность и удалённая работа</h3>
+          <div class="module-desc">Полный курс кибербезопасности для начинающих — VPN, публичные сети, политика чистого стола, блокировка экрана</div>
+          <div class="module-tags">
+            <span class="module-tag">Продвинутый</span>
+            <span class="module-tag">Курс</span>
+          </div>
+        </div>
+        <div class="module-meta">
+          <div class="module-duration">⏱ 3:06:44</div>
+          <div class="module-play">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Смотреть
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="quiz">
+    <div class="section-label">// Проверь знания</div>
+    <h2>Итоговый тест — 40 вопросов</h2>
+    <p class="section-desc">Проверьте знания по всем шести модулям. Ответьте на все вопросы и узнайте свой итоговый результат.</p>
+
+    <div class="quiz-wrapper fade-in">
+      <div class="quiz-progress-bar-wrap">
+        <div class="quiz-progress-bar" id="quizProgressBar"></div>
+      </div>
+      <div class="quiz-progress-label" id="quizProgressLabel">Вопрос 1 из 40</div>
+
+      <div id="quizBody"></div>
+
+      <div class="quiz-nav" id="quizNav" style="display:none">
+        <span></span>
+        <button class="btn btn-outline" id="quizNext" onclick="nextQuestion()">Следующий →</button>
+      </div>
+
+      <div id="quizResult" style="display:none">
+        <div class="quiz-result-score" id="quizScoreDisplay"></div>
+        <div class="quiz-result-label" id="quizResultLabel"></div>
+        <div class="quiz-result-breakdown" id="quizBreakdown"></div>
+        <button class="btn btn-primary" onclick="restartQuiz()" style="margin-top:2rem;">Пройти заново</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <section id="tips">
+    <div class="section-label">// Правила безопасности</div>
+    <h2>12 правил кибергигиены</h2>
+    <p class="section-desc">Простые привычки, которые существенно снижают риск инцидентов информационной безопасности.</p>
+
+    <div class="tips-grid">
+      <div class="tip-card fade-in">
+        <span class="tip-icon">🔐</span>
+        <h3>Надёжные пароли</h3>
+        <p>Используйте уникальные пароли от 12 символов с буквами, цифрами и знаками. Никогда не повторяйте пароли.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">📧</span>
+        <h3>Проверяйте отправителя</h3>
+        <p>Перед открытием вложений или переходом по ссылкам убедитесь в подлинности отправителя письма.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">🔄</span>
+        <h3>Обновляйте ПО</h3>
+        <p>Своевременно устанавливайте обновления операционной системы и приложений — они закрывают уязвимости.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">🛡️</span>
+        <h3>Двухфакторная аутентификация</h3>
+        <p>Включайте 2FA везде, где это возможно. Даже если пароль украдут — доступ останется защищённым.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">💻</span>
+        <h3>Блокируйте экран</h3>
+        <p>Уходя от рабочего места даже на минуту, блокируйте компьютер. Win+L или Cmd+Ctrl+Q.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">📶</span>
+        <h3>Используйте VPN</h3>
+        <p>При работе вне офиса обязательно используйте корпоративный VPN для защиты соединения.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">💾</span>
+        <h3>Резервные копии</h3>
+        <p>Регулярно создавайте резервные копии важных данных. Правило 3-2-1: 3 копии, 2 носителя, 1 удалённая.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">🚫</span>
+        <h3>Не подключайте чужие носители</h3>
+        <p>Найденная флешка или диск могут содержать вредоносное ПО. Никогда не подключайте незнакомые устройства.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">📞</span>
+        <h3>Сообщайте об инцидентах</h3>
+        <p>Заметили подозрительную активность? Немедленно сообщайте в службу информационной безопасности.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">📚</span>
+        <h3>Учитесь постоянно</h3>
+        <p>Угрозы меняются каждый день. Проходите обучение, читайте новости ИБ, повышайте осведомлённость.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">🔍</span>
+        <h3>Проверяйте ссылки перед кликом</h3>
+        <p>Наведите курсор на ссылку и посмотрите в строку браузера — адрес должен совпадать с ожидаемым сайтом. Опечатки и странные домены — красный флаг.</p>
+      </div>
+      <div class="tip-card fade-in">
+        <span class="tip-icon">🧩</span>
+        <h3>Разграничивайте рабочее и личное</h3>
+        <p>Не используйте корпоративную почту для личных сервисов. Храните рабочие файлы только на корпоративных ресурсах, не на личных облаках и устройствах.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      <div class="footer-logo">ИБАкадемия</div>
+      <div class="footer-copy" style="margin-top:0.5rem;">Организация процесса обучения сотрудников по вопросам ИБ</div>
+    </div>
+    <div class="footer-credits">
+      <div>Разработчики проекта</div>
+      <strong>Утеев Даниэль &nbsp;·&nbsp; Афанасьев Артём</strong>
+      <div style="margin-top:0.3rem; opacity:0.5; font-size:0.7rem;">Дипломная работа · 2026</div>
+    </div>
+  </footer>
+
+  <script>
+    const questions = [
+      {
+        module: "Модуль 1 · Введение в ИБ",
+        q: "Что означает аббревиатура CIA в контексте информационной безопасности?",
+        options: ["Конфиденциальность, Целостность, Доступность", "Контроль, Идентификация, Аутентификация", "Криптография, Инфраструктура, Анализ", "Центральное Разведывательное Агентство"],
+        correct: 0,
+        feedback: "CIA-триада: Confidentiality (Конфиденциальность), Integrity (Целостность), Availability (Доступность) — три фундаментальных принципа ИБ."
+      },
+      {
+        module: "Модуль 1 · Введение в ИБ",
+        q: "Какой из принципов CIA-триады нарушается, если данные были изменены злоумышленником без ведома владельца?",
+        options: ["Конфиденциальность", "Целостность", "Доступность", "Аутентичность"],
+        correct: 1,
+        feedback: "Целостность означает, что данные не должны изменяться без авторизации. Несанкционированное изменение данных — это нарушение именно этого принципа."
+      },
+      {
+        module: "Модуль 1 · Введение в ИБ",
+        q: "Кто является самым уязвимым звеном в системе информационной безопасности организации?",
+        options: ["Устаревшее программное обеспечение", "Слабые пароли", "Человеческий фактор — сотрудники", "Незащищённые сети"],
+        correct: 2,
+        feedback: "По данным исследований, до 95% инцидентов ИБ связаны с действиями людей. Именно поэтому обучение сотрудников — ключевой элемент защиты."
+      },
+      {
+        module: "Модуль 1 · Введение в ИБ",
+        q: "Что такое «вектор атаки»?",
+        options: ["Направление распространения вируса по сети", "Путь или метод, используемый злоумышленником для получения доступа к системе", "Список уязвимых компьютеров в организации", "Тип вредоносного ПО"],
+        correct: 1,
+        feedback: "Вектор атаки — это конкретный путь или метод, который злоумышленник использует для проникновения в систему (например, email, USB, браузер)."
+      },
+      {
+        module: "Модуль 1 · Введение в ИБ",
+        q: "Что такое «нулевой день» (Zero-Day) в контексте кибербезопасности?",
+        options: ["Первый день работы нового сотрудника", "Уязвимость в ПО, о которой разработчик ещё не знает и не выпустил патч", "Атака, начатая ровно в полночь", "Полное отсутствие угроз в системе"],
+        correct: 1,
+        feedback: "Zero-Day — уязвимость, неизвестная разработчику. Атаки с её использованием особенно опасны, так как защиты ещё не существует."
+      },
+      {
+        module: "Модуль 1 · Введение в ИБ",
+        q: "Какой документ определяет правила работы сотрудников с корпоративной информацией?",
+        options: ["Трудовой договор", "Политика информационной безопасности организации", "Должностная инструкция", "Корпоративный кодекс"],
+        correct: 1,
+        feedback: "Политика ИБ — основной нормативный документ, регламентирующий правила обращения с информацией, доступа к системам и поведения при инцидентах."
+      },
+      {
+        module: "Модуль 1 · Введение в ИБ",
+        q: "Что такое «социальная инженерия» в контексте кибербезопасности?",
+        options: ["Проектирование социальных сетей", "Манипуляция людьми с целью получения конфиденциальной информации или доступа к системам", "Создание профилей пользователей в системе", "Метод шифрования данных"],
+        correct: 1,
+        feedback: "Социальная инженерия — это психологические манипуляции, при которых злоумышленник обманом заставляет людей раскрывать информацию или выполнять опасные действия."
+      },
+
+      {
+        module: "Модуль 2 · Фишинг",
+        q: "Вы получили письмо от «службы безопасности банка» с просьбой срочно подтвердить данные карты, перейдя по ссылке. Что делать?",
+        options: ["Перейти по ссылке — банк не стал бы писать зря", "Позвонить в банк по официальному номеру и уточнить ситуацию", "Ответить на письмо и попросить подробности", "Переслать письмо коллеге для проверки"],
+        correct: 1,
+        feedback: "Банки никогда не запрашивают данные карты по email. Всегда звоните по официальному номеру, указанному на сайте банка или обратной стороне карты."
+      },
+      {
+        module: "Модуль 2 · Фишинг",
+        q: "Какой из признаков НЕ является типичным для фишингового письма?",
+        options: ["Чувство срочности и давление на действие", "Просьба перейти по ссылке и ввести данные", "Письмо пришло с корпоративного адреса коллеги, которого вы знаете лично", "Обезличенное обращение «Уважаемый клиент»"],
+        correct: 2,
+        feedback: "Письмо от знакомого коллеги с корпоративного адреса — наименее типичный признак фишинга. Хотя и аккаунты коллег могут быть взломаны, это реже используется."
+      },
+      {
+        module: "Модуль 2 · Фишинг",
+        q: "Что такое «спир-фишинг» (Spear Phishing)?",
+        options: ["Фишинг с использованием вредоносных USB-устройств", "Целевая фишинговая атака на конкретного человека или организацию", "Массовая рассылка мошеннических писем", "Фишинг через SMS-сообщения"],
+        correct: 1,
+        feedback: "Спир-фишинг — персонализированная атака. Злоумышленник заранее изучает жертву и создаёт убедительное сообщение, содержащее личные детали."
+      },
+      {
+        module: "Модуль 2 · Фишинг",
+        q: "Как правильно проверить ссылку в письме перед тем, как кликнуть?",
+        options: ["Нажать на ссылку и посмотреть, куда она ведёт", "Навести курсор на ссылку и посмотреть URL в строке статуса браузера", "Скопировать и вставить ссылку в Google", "Спросить у коллеги"],
+        correct: 1,
+        feedback: "Наведите курсор на ссылку (не кликая!) — в строке состояния браузера отобразится реальный URL. Если он не совпадает с ожидаемым доменом — не переходите."
+      },
+      {
+        module: "Модуль 2 · Фишинг",
+        q: "Что такое «вишинг» (Vishing)?",
+        options: ["Фишинг через фальшивые Wi-Fi сети", "Голосовой фишинг — мошенничество по телефону", "Фишинг через видеозвонки", "Атака с использованием поддельных веб-камер"],
+        correct: 1,
+        feedback: "Вишинг (Voice Phishing) — мошенничество по телефону. Злоумышленники звонят, представляясь банком, службой поддержки или госорганами, и выманивают данные."
+      },
+      {
+        module: "Модуль 2 · Фишинг",
+        q: "Сотрудник получил письмо якобы от директора с просьбой срочно перевести деньги поставщику. Как называется такая атака?",
+        options: ["Фарминг", "Уэйлинг (Whaling) / BEC-атака", "DDoS-атака", "Брутфорс"],
+        correct: 1,
+        feedback: "Уэйлинг или BEC (Business Email Compromise) — атака на топ-менеджмент или имитация его приказов. Цель — вынудить сотрудников перевести деньги или раскрыть данные."
+      },
+      {
+        module: "Модуль 2 · Фишинг",
+        q: "Вы подозреваете, что открыли фишинговое письмо и перешли по ссылке. Первое действие?",
+        options: ["Перезагрузить компьютер", "Немедленно сообщить в IT-отдел или службу безопасности", "Самостоятельно удалить подозрительные файлы", "Никому не говорить, чтобы не создавать панику"],
+        correct: 1,
+        feedback: "Главное — немедленно сообщить специалистам. Чем быстрее отреагирует IT-отдел, тем меньше ущерб. Скрывать инцидент — худшая стратегия."
+      },
+
+      {
+        module: "Модуль 3 · Пароли и аутентификация",
+        q: "Какой пароль является наиболее надёжным?",
+        options: ["password123", "Иван1990!", "Tr0ub4dor&3!kLm", "qwerty"],
+        correct: 2,
+        feedback: "Надёжный пароль: минимум 12 символов, заглавные и строчные буквы, цифры, спецсимволы. Избегайте личных данных (имён, дат рождения)."
+      },
+      {
+        module: "Модуль 3 · Пароли и аутентификация",
+        q: "Что такое двухфакторная аутентификация (2FA)?",
+        options: ["Использование двух разных паролей", "Подтверждение личности с помощью двух независимых факторов", "Вход в систему с двух устройств одновременно", "Двойное шифрование данных"],
+        correct: 1,
+        feedback: "2FA требует двух независимых доказательств: того, что вы знаете (пароль), и того, что у вас есть (телефон, токен) или что вы из себя представляете (биометрия)."
+      },
+      {
+        module: "Модуль 3 · Пароли и аутентификация",
+        q: "Почему нельзя использовать один и тот же пароль на разных сайтах?",
+        options: ["Это замедляет работу системы", "Утечка с одного сайта скомпрометирует все остальные аккаунты", "Это нарушает лицензионное соглашение", "Пароли быстрее устаревают"],
+        correct: 1,
+        feedback: "Если база одного сайта утечёт, злоумышленники попробуют ваши логин и пароль на всех популярных сервисах (credential stuffing). Уникальный пароль для каждого сайта защищает от этого."
+      },
+      {
+        module: "Модуль 3 · Пароли и аутентификация",
+        q: "Коллега просит сказать ваш пароль, чтобы помочь с задачей пока вас нет. Что делать?",
+        options: ["Сказать пароль — коллегам можно доверять", "Отказать и предложить альтернативное решение через IT-отдел", "Сменить пароль после того, как коллега закончит", "Записать пароль на бумаге и передать"],
+        correct: 1,
+        feedback: "Пароль — персональный ключ, который нельзя передавать никому, включая коллег и IT-специалистов. Для совместного доступа существуют специальные механизмы."
+      },
+      {
+        module: "Модуль 3 · Пароли и аутентификация",
+        q: "Что такое менеджер паролей?",
+        options: ["Сотрудник, отвечающий за пароли в компании", "Программа для безопасного хранения и генерации уникальных паролей", "Журнал с записанными паролями", "Функция браузера для автозаполнения"],
+        correct: 1,
+        feedback: "Менеджер паролей (например, KeePass, Bitwarden) хранит все пароли в зашифрованном хранилище. Вам нужно помнить только один мастер-пароль."
+      },
+      {
+        module: "Модуль 3 · Пароли и аутентификация",
+        q: "Как часто рекомендуется менять пароли от корпоративных систем?",
+        options: ["Никогда — хороший пароль менять не нужно", "Ежедневно", "В соответствии с политикой организации, а также при подозрении на компрометацию", "Раз в 10 лет"],
+        correct: 2,
+        feedback: "Современные рекомендации NIST не требуют принудительной смены паролей по расписанию, но обязывают менять пароль при признаках компрометации или согласно политике компании."
+      },
+      {
+        module: "Модуль 3 · Пароли и аутентификация",
+        q: "Что такое «брутфорс» (Brute Force Attack)?",
+        options: ["Физическое повреждение оборудования", "Автоматический перебор всех возможных комбинаций пароля", "Кража пароля через фишинговое письмо", "Взлом через уязвимость в ПО"],
+        correct: 1,
+        feedback: "Брутфорс — метод взлома путём перебора всех возможных паролей. Длинный пароль из случайных символов делает брутфорс практически невозможным."
+      },
+
+      {
+        module: "Модуль 4 · Работа с данными",
+        q: "Как называется процесс преобразования данных в нечитаемый формат для защиты от несанкционированного доступа?",
+        options: ["Архивирование", "Шифрование", "Хеширование", "Дефрагментация"],
+        correct: 1,
+        feedback: "Шифрование преобразует данные таким образом, что прочитать их может только тот, у кого есть ключ расшифровки. Это основной метод защиты данных."
+      },
+      {
+        module: "Модуль 4 · Работа с данными",
+        q: "Что нужно сделать с конфиденциальными документами перед тем, как выбросить их?",
+        options: ["Просто сложить в мусорную корзину", "Порвать на несколько частей", "Уничтожить с помощью шредера или через официальный канал утилизации", "Сохранить в архив на год"],
+        correct: 2,
+        feedback: "Злоумышленники могут получать данные из мусора (атака «Dumpster Diving»). Документы с конфиденциальной информацией должны уничтожаться через шредер."
+      },
+      {
+        module: "Модуль 4 · Работа с данными",
+        q: "Какое правило резервного копирования является наиболее надёжным?",
+        options: ["Одна копия на рабочем ПК", "Правило 3-2-1: 3 копии, 2 разных носителя, 1 удалённая копия", "Еженедельная копия на USB-флешке", "Автосохранение в браузере"],
+        correct: 1,
+        feedback: "Правило 3-2-1 — золотой стандарт: 3 копии данных, на 2 разных типах носителей (например, HDD и облако), 1 из которых хранится удалённо или офлайн."
+      },
+      {
+        module: "Модуль 4 · Работа с данными",
+        q: "Что означает «принцип минимальных привилегий»?",
+        options: ["Сотрудники должны работать с минимальным количеством программ", "Каждый сотрудник получает только те права доступа, которые необходимы для его работы", "Администраторы имеют минимальный контроль над системой", "Пользователи не могут устанавливать ПО"],
+        correct: 1,
+        feedback: "Принцип наименьших привилегий (Least Privilege) ограничивает доступ к данным и системам — сотрудник видит только то, что нужно для его задач. Это снижает ущерб при компрометации."
+      },
+      {
+        module: "Модуль 4 · Работа с данными",
+        q: "Можно ли отправлять конфиденциальные корпоративные документы через личную почту?",
+        options: ["Да, если получатель — надёжный человек", "Да, если файл запаролен", "Нет, личные каналы связи не контролируются компанией и менее защищены", "Да, если отправляется один файл"],
+        correct: 2,
+        feedback: "Личные почтовые сервисы не соответствуют корпоративным стандартам безопасности. Используйте только одобренные корпоративные каналы для передачи конфиденциальных данных."
+      },
+      {
+        module: "Модуль 4 · Работа с данными",
+        q: "Что такое «утечка данных» (Data Breach)?",
+        options: ["Случайное удаление файлов", "Несанкционированное получение, раскрытие или кража конфиденциальной информации", "Сбой в работе системы резервного копирования", "Переполнение базы данных"],
+        correct: 1,
+        feedback: "Утечка данных — любой инцидент, при котором конфиденциальная информация становится доступной неавторизованным лицам. Может быть случайной или преднамеренной."
+      },
+
+      {
+        module: "Модуль 5 · Реагирование на инциденты",
+        q: "Что является первым признаком того, что компьютер заражён вирусом-шифровальщиком?",
+        options: ["Компьютер работает быстрее обычного", "Файлы получают новые расширения и становятся недоступными", "Экран становится ярче", "Принтер начинает печатать сам по себе"],
+        correct: 1,
+        feedback: "Программы-вымогатели шифруют файлы и меняют их расширения (например, .docx превращается в .locked). Появляется уведомление с требованием выкупа."
+      },
+      {
+        module: "Модуль 5 · Реагирование на инциденты",
+        q: "Вы заметили подозрительную активность на своём рабочем компьютере. Что делать в первую очередь?",
+        options: ["Перезагрузить компьютер самостоятельно", "Немедленно сообщить в IT-отдел или службу информационной безопасности", "Попытаться самостоятельно удалить вирус", "Выключить компьютер и уйти домой"],
+        correct: 1,
+        feedback: "Первый шаг — уведомить IT-специалистов. Самостоятельные действия могут уничтожить доказательства или усугубить ситуацию. Скорость реагирования критична."
+      },
+      {
+        module: "Модуль 5 · Реагирование на инциденты",
+        q: "Что такое «план реагирования на инциденты» (Incident Response Plan)?",
+        options: ["Список сотрудников, виновных в инцидентах", "Заранее разработанный порядок действий при возникновении инцидентов ИБ", "График профилактического обслуживания серверов", "Инструкция по установке антивируса"],
+        correct: 1,
+        feedback: "IRP — документ, определяющий роли, ответственность и последовательность шагов при инцидентах. Его наличие позволяет реагировать быстро и организованно."
+      },
+      {
+        module: "Модуль 5 · Реагирование на инциденты",
+        q: "Стоит ли платить выкуп злоумышленникам при атаке программы-вымогателя?",
+        options: ["Да — это быстро решит проблему", "Зависит от суммы выкупа", "Нет — оплата не гарантирует восстановление данных и поощряет преступников", "Да, если у компании нет резервных копий"],
+        correct: 2,
+        feedback: "Специалисты по ИБ и правоохранительные органы не рекомендуют платить выкуп. Это не гарантирует расшифровку, а деньги финансируют дальнейшую преступную деятельность."
+      },
+      {
+        module: "Модуль 5 · Реагирование на инциденты",
+        q: "Зачем документировать инциденты информационной безопасности?",
+        options: ["Чтобы наказать виновных сотрудников", "Для анализа, улучшения защиты, юридических целей и выполнения нормативных требований", "Для отчёта перед акционерами", "Это не нужно — достаточно устного сообщения"],
+        correct: 1,
+        feedback: "Документация инцидентов позволяет: анализировать причины, совершенствовать защиту, соответствовать регуляторным требованиям (152-ФЗ, ISO 27001) и использовать в судебных разбирательствах."
+      },
+      {
+        module: "Модуль 5 · Реагирование на инциденты",
+        q: "Что такое DDoS-атака?",
+        options: ["Кража данных через поддельный сайт", "Перегрузка сервера или сети огромным количеством запросов с целью сделать его недоступным", "Установка шпионского ПО на устройство", "Взлом пароля методом перебора"],
+        correct: 1,
+        feedback: "DDoS (Distributed Denial of Service) — атака, при которой тысячи заражённых устройств одновременно отправляют запросы к серверу, вызывая его недоступность для обычных пользователей."
+      },
+      {
+        module: "Модуль 5 · Реагирование на инциденты",
+        q: "Что означает «время реакции на инцидент» (MTTR)?",
+        options: ["Время, необходимое для взлома системы", "Среднее время восстановления системы после инцидента", "Время хранения логов безопасности", "Период действия лицензии на антивирус"],
+        correct: 1,
+        feedback: "MTTR (Mean Time To Recovery/Repair) — важный показатель: сколько времени занимает восстановление нормальной работы после инцидента. Чем меньше — тем лучше."
+      },
+
+      {
+        module: "Модуль 6 · Физическая безопасность и удалённая работа",
+        q: "На рабочей парковке вы нашли USB-флешку. Ваши действия?",
+        options: ["Подключить к рабочему ПК — вдруг там важные данные", "Взять домой и проверить на личном компьютере", "Сдать в IT-отдел или службу безопасности", "Выбросить в ближайший мусорный бак"],
+        correct: 2,
+        feedback: "Подброшенные USB-устройства — классическая атака (USB Drop). Они могут автоматически запускать вредоносный код при подключении. Всегда сдавайте находки в IT-службу."
+      },
+      {
+        module: "Модуль 6 · Физическая безопасность и удалённая работа",
+        q: "Что такое «политика чистого стола» (Clean Desk Policy)?",
+        options: ["Требование убирать мусор с рабочего места", "Правило, запрещающее оставлять конфиденциальные документы и носители на виду при отсутствии на рабочем месте", "Инструкция по дезинфекции оргтехники", "Правило хранения канцелярских товаров"],
+        correct: 1,
+        feedback: "Clean Desk Policy требует убирать все конфиденциальные материалы в защищённые места при уходе с рабочего места. Это защищает от случайного или намеренного просмотра посторонними."
+      },
+      {
+        module: "Модуль 6 · Физическая безопасность и удалённая работа",
+        q: "Почему опасно использовать общедоступный Wi-Fi без VPN для рабочих задач?",
+        options: ["Скорость соединения будет низкой", "Трафик может быть перехвачен злоумышленниками в той же сети (атака Man-in-the-Middle)", "Wi-Fi сигнал мешает работе оборудования", "Расходуется больше заряда аккумулятора"],
+        correct: 1,
+        feedback: "В публичных сетях злоумышленник может перехватывать нешифрованный трафик. VPN создаёт зашифрованный туннель, защищая данные даже в ненадёжных сетях."
+      },
+      {
+        module: "Модуль 6 · Физическая безопасность и удалённая работа",
+        q: "Вы уходите с рабочего места на 5 минут. Что нужно сделать с компьютером?",
+        options: ["Ничего — вы скоро вернётесь", "Закрыть все окна браузера", "Заблокировать экран (Win+L или Cmd+Ctrl+Q)", "Выключить монитор"],
+        correct: 2,
+        feedback: "Даже краткое отсутствие — повод заблокировать экран. За несколько минут злоумышленник может скопировать данные, установить вредоносное ПО или получить доступ к системам."
+      },
+      {
+        module: "Модуль 6 · Физическая безопасность и удалённая работа",
+        q: "Что такое «плечевой сёрфинг» (Shoulder Surfing)?",
+        options: ["Кража ноутбука из-за спины", "Подсматривание за экраном пользователя с целью кражи паролей или конфиденциальной информации", "Удалённое управление компьютером без ведома владельца", "Атака через Bluetooth"],
+        correct: 1,
+        feedback: "Плечевой сёрфинг — физическая угроза: злоумышленник наблюдает за экраном в общественном месте или офисе. Используйте экранные фильтры (privacy screens) в публичных местах."
+      },
+      {
+        module: "Модуль 6 · Физическая безопасность и удалённая работа",
+        q: "Что нужно сделать, если вы потеряли корпоративный телефон или ноутбук?",
+        options: ["Подождать несколько дней — вдруг найдётся", "Немедленно сообщить в IT-отдел и службу безопасности для удалённой блокировки устройства", "Купить новое устройство за свой счёт", "Сменить пароль от личной почты"],
+        correct: 1,
+        feedback: "Утерянное устройство нужно немедленно заблокировать удалённо. Многие корпоративные системы (MDM) позволяют дистанционно стереть данные до того, как злоумышленник получит к ним доступ."
+      }
+    ];
+
+    const MODULE_NAMES = [
+      "Модуль 1 · Введение в ИБ",
+      "Модуль 2 · Фишинг",
+      "Модуль 3 · Пароли и аутентификация",
+      "Модуль 4 · Работа с данными",
+      "Модуль 5 · Реагирование на инциденты",
+      "Модуль 6 · Физическая безопасность и удалённая работа"
+    ];
+
+    let current = 0;
+    let score = 0;
+    let answered = false;
+    let moduleScores = {};
+    MODULE_NAMES.forEach(m => moduleScores[m] = { correct: 0, total: 0 });
+
+    function renderQuestion() {
+      answered = false;
+      const q = questions[current];
+      const pct = ((current) / questions.length) * 100;
+
+      document.getElementById('quizProgressBar').style.width = pct + '%';
+      document.getElementById('quizProgressLabel').textContent = `Вопрос ${current + 1} из ${questions.length}`;
+      document.getElementById('quizNav').style.display = 'none';
+      document.getElementById('quizResult').style.display = 'none';
+
+      const body = document.getElementById('quizBody');
+      body.innerHTML = `
+        <div class="quiz-module-tag">${q.module}</div>
+        <div class="quiz-question">${q.q}</div>
+        <div class="quiz-options" id="quizOptions">
+          ${q.options.map((o, i) => `<button class="quiz-option" onclick="selectOption(${i})">${o}</button>`).join('')}
+        </div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+      `;
+    }
+
+    function selectOption(idx) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[current];
+      moduleScores[q.module].total++;
+
+      const btns = document.querySelectorAll('.quiz-option');
+      btns.forEach(b => b.disabled = true);
+      btns[idx].classList.add(idx === q.correct ? 'correct' : 'wrong');
+      btns[q.correct].classList.add('correct');
+
+      if (idx === q.correct) {
+        score++;
+        moduleScores[q.module].correct++;
+      }
+
+      const fb = document.getElementById('quizFeedback');
+      fb.textContent = idx === q.correct
+        ? `✅ Верно! ${q.feedback}`
+        : `❌ Неверно. ${q.feedback}`;
+      fb.className = `quiz-feedback show ${idx === q.correct ? 'ok' : 'err'}`;
+
+      document.getElementById('quizNav').style.display = 'flex';
+
+      if (current === questions.length - 1) {
+        document.getElementById('quizNext').textContent = 'Посмотреть результат →';
+      }
+    }
+
+    function nextQuestion() {
+      if (current < questions.length - 1) {
+        current++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      document.getElementById('quizProgressBar').style.width = '100%';
+      document.getElementById('quizProgressLabel').textContent = 'Тест завершён';
+      document.getElementById('quizBody').innerHTML = '';
+      document.getElementById('quizNav').style.display = 'none';
+
+      const pct = Math.round((score / questions.length) * 100);
+      let label, color;
+      if (pct >= 85) { label = '🏆 Отличный результат! Вы хорошо владеете основами ИБ.'; color = 'var(--success)'; }
+      else if (pct >= 65) { label = '👍 Хороший результат. Повторите слабые модули.'; color = '#ffa500'; }
+      else { label = '📚 Стоит повторить материал и пройти тест снова.'; color = 'var(--danger)'; }
+
+      document.getElementById('quizScoreDisplay').textContent = `${score} / ${questions.length}`;
+      document.getElementById('quizScoreDisplay').style.color = color;
+      document.getElementById('quizResultLabel').innerHTML = `${pct}% правильных ответов<br><span style="font-size:1rem;color:var(--text-dim)">${label}</span>`;
+
+      const breakdown = document.getElementById('quizBreakdown');
+      breakdown.innerHTML = MODULE_NAMES.map(m => {
+        const s = moduleScores[m];
+        const mp = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
+        const cls = mp >= 80 ? 'great' : mp >= 50 ? 'ok' : 'bad';
+        const shortName = m.replace('Модуль ', 'М').split('·')[0].trim();
+        return `<div class="breakdown-item">
+          <div class="b-module">${m.split('·')[1]?.trim() || m}</div>
+          <div class="b-score ${cls}">${s.correct}/${s.total} — ${mp}%</div>
+        </div>`;
+      }).join('');
+
+      document.getElementById('quizResult').style.display = 'block';
+    }
+
+    function restartQuiz() {
+      current = 0; score = 0; answered = false;
+      MODULE_NAMES.forEach(m => moduleScores[m] = { correct: 0, total: 0 });
+      document.getElementById('quizNext').textContent = 'Следующий →';
+      renderQuestion();
+    }
+
+    renderQuestion();
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
