@@ -43,6 +43,134 @@
       z-index: 0;
     }
 
+    /* ============================================================
+       PRINT STYLES — печатается ТОЛЬКО сертификат
+    ============================================================ */
+    @media print {
+      body > *:not(#print-certificate-overlay) { display: none !important; }
+      #print-certificate-overlay {
+        display: flex !important;
+        position: fixed !important;
+        inset: 0 !important;
+        background: #fff !important;
+        z-index: 99999 !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #print-certificate-overlay .pco-inner {
+        width: 210mm;
+        min-height: 148mm;
+        padding: 18mm 22mm;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      body::before { display: none !important; }
+    }
+
+    /* ============================================================
+       PRINT CERTIFICATE OVERLAY (скрыт на экране, показывается при печати)
+    ============================================================ */
+    #print-certificate-overlay {
+      display: none;
+    }
+
+    /* Внутренние стили для печатного сертификата */
+    .pco-inner {
+      width: 100%;
+      max-width: 800px;
+      padding: 3rem 4rem;
+      background: #fff;
+      text-align: center;
+      position: relative;
+      border: 3px double #00d4ff;
+    }
+    .pco-corner {
+      position: absolute;
+      width: 32px; height: 32px;
+      border-color: #0077ff;
+      border-style: solid;
+    }
+    .pco-corner.tl { top: 10px; left: 10px;  border-width: 2px 0 0 2px; }
+    .pco-corner.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+    .pco-corner.bl { bottom: 10px; left: 10px;  border-width: 0 0 2px 2px; }
+    .pco-corner.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+    .pco-org {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase;
+      color: #0077ff; margin-bottom: 0.5rem;
+    }
+    .pco-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 2rem; font-weight: 700; letter-spacing: 2px;
+      color: #05111f; margin-bottom: 0.3rem;
+    }
+    .pco-subtitle {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase;
+      color: #6b8ba4; margin-bottom: 2rem;
+    }
+    .pco-divider {
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, #0077ff, #00d4ff);
+      margin: 0 auto 2rem;
+    }
+    .pco-given {
+      font-size: 0.85rem; color: #6b8ba4; margin-bottom: 0.5rem;
+    }
+    .pco-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 2.4rem; font-weight: 700;
+      color: #05111f; margin-bottom: 1.5rem;
+      border-bottom: 1px solid #e0eaf0;
+      padding-bottom: 1rem;
+    }
+    .pco-desc {
+      font-size: 0.9rem; color: #3a5570; line-height: 1.8; margin-bottom: 1.5rem;
+    }
+    .pco-course {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.1rem; font-weight: 700;
+      color: #05111f; margin-bottom: 1.5rem;
+    }
+    .pco-score-block {
+      display: inline-block;
+      border: 1px solid #00d4ff;
+      border-radius: 4px;
+      padding: 0.6rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .pco-score-label {
+      font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+      color: #6b8ba4; margin-bottom: 0.2rem;
+    }
+    .pco-score-val {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.6rem; font-weight: 700;
+      color: #00a07a;
+    }
+    .pco-date {
+      font-size: 0.8rem; color: #9ab0c0; margin-bottom: 2rem;
+    }
+    .pco-footer {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      border-top: 1px solid #e0eaf0; padding-top: 1.5rem;
+      font-size: 0.75rem; color: #9ab0c0;
+    }
+    .pco-footer-logo {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.2rem; font-weight: 700; letter-spacing: 2px;
+      color: #0077ff;
+    }
+    .pco-shield {
+      font-size: 2.5rem; margin-bottom: 1rem; display: block;
+    }
+
     /* === NAV === */
     nav {
       position: fixed;
@@ -79,6 +207,11 @@
       transition: color 0.2s;
     }
     .nav-links a:hover { color: var(--accent); }
+
+    /* Вкладка «Сертификат» в навбаре — скрыта до получения */
+    #navCertLink { display: none; }
+    #navCertLink a { color: var(--success) !important; }
+    #navCertLink a:hover { color: #fff !important; }
 
     .nav-auth-area { display: flex; align-items: center; gap: 1rem; }
     .nav-user-info { display: flex; align-items: center; gap: 0.75rem; }
@@ -201,7 +334,7 @@
       background: rgba(0,229,160,0.08); cursor: default;
     }
 
-    /* === CERTIFICATE SECTION === */
+    /* === CERTIFICATE SECTION (on-page) === */
     #certificate-section { display: none; }
     #certificate-section.visible { display: block; }
     .certificate-box {
@@ -420,6 +553,31 @@
       font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 600;
       color: #fff; text-align: center; margin-bottom: 2rem;
     }
+
+    /* === QUIZ HISTORY PANEL === */
+    .quiz-history-panel {
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .quiz-history-panel.show { display: grid; }
+    .qhp-card {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 3px;
+      padding: 1rem 1.25rem; text-align: center;
+    }
+    .qhp-label {
+      font-family: 'Rajdhani', sans-serif; font-size: 0.65rem; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.5rem;
+    }
+    .qhp-score {
+      font-family: 'Rajdhani', sans-serif; font-size: 1.6rem; font-weight: 700;
+    }
+    .qhp-score.current { color: var(--accent); }
+    .qhp-score.best    { color: var(--success); }
+    .qhp-score.prev    { color: var(--text-dim); }
+    .qhp-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.25rem; }
+
     .quiz-result-breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; }
     .breakdown-item { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 1rem 1.25rem; }
     .breakdown-item .b-module {
@@ -430,6 +588,21 @@
     .b-score.great { color: var(--success); }
     .b-score.ok    { color: #ffa500; }
     .b-score.bad   { color: var(--danger); }
+
+    /* === 100% PERFECT banner === */
+    .quiz-perfect-banner {
+      display: none;
+      background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(0,229,160,0.1));
+      border: 1px solid var(--success); border-radius: 4px;
+      padding: 1.5rem 2rem; text-align: center; margin-bottom: 1.5rem;
+    }
+    .quiz-perfect-banner.show { display: block; }
+    .quiz-perfect-banner .pb-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+    .quiz-perfect-banner .pb-title {
+      font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; font-weight: 700;
+      color: var(--success); letter-spacing: 1px; margin-bottom: 0.4rem;
+    }
+    .quiz-perfect-banner .pb-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; }
 
     /* === TIPS === */
     .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
@@ -460,7 +633,6 @@
 
     .section-divider { position: relative; z-index: 1; height: 1px; background: var(--border); max-width: 1200px; margin: 0 auto; }
 
-    /* fade-in — по умолчанию видимые, анимация если JS включён */
     .fade-in { opacity: 1; transform: none; }
     .fade-in.js-animate { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .fade-in.js-animate.visible { opacity: 1; transform: translateY(0); }
@@ -473,10 +645,64 @@
       .footer-credits { text-align: center; }
       .module-row { grid-template-columns: 1fr; }
       .module-num { display: none; }
+      .quiz-history-panel { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
+
+  <!-- ============================================================
+       PRINT-ONLY CERTIFICATE OVERLAY
+       Скрыт на экране, показывается только при window.print()
+  ============================================================ -->
+  <div id="print-certificate-overlay">
+    <div class="pco-inner">
+      <div class="pco-corner tl"></div>
+      <div class="pco-corner tr"></div>
+      <div class="pco-corner bl"></div>
+      <div class="pco-corner br"></div>
+
+      <span class="pco-shield">🛡️</span>
+      <div class="pco-org">ИБАкадемия · Информационная безопасность</div>
+      <div class="pco-title">СЕРТИФИКАТ</div>
+      <div class="pco-subtitle">О прохождении курса</div>
+      <div class="pco-divider"></div>
+
+      <div class="pco-given">Настоящим подтверждается, что</div>
+      <div class="pco-name" id="pco-name">—</div>
+
+      <div class="pco-desc">
+        успешно прошёл(ла) обучение и итоговый контроль знаний по курсу
+      </div>
+      <div class="pco-course">«Информационная безопасность для сотрудников»</div>
+      <div class="pco-desc" style="margin-bottom:1rem;">
+        продемонстрировав уверенное владение основами киберзащиты,<br>
+        методами выявления угроз и правилами безопасного поведения в цифровой среде.
+      </div>
+
+      <div class="pco-score-block">
+        <div class="pco-score-label">Результат итогового теста</div>
+        <div class="pco-score-val" id="pco-score">—</div>
+      </div>
+
+      <div class="pco-date" id="pco-date">Дата выдачи: —</div>
+
+      <div class="pco-footer">
+        <div>
+          <div class="pco-footer-logo">ИБАкадемия</div>
+          <div style="font-size:0.7rem;color:#9ab0c0;margin-top:0.2rem;">Дипломная работа · 2026</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:0.7rem;margin-bottom:0.2rem;">Разработчики</div>
+          <div style="font-size:0.75rem;color:#3a5570;font-weight:600;">Утеев Даниэль · Афанасьев Артём</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.65rem;color:#9ab0c0;">ID сертификата</div>
+          <div style="font-size:0.7rem;color:#3a5570;" id="pco-id">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL AUTH -->
   <div class="modal-overlay" id="authModal">
@@ -546,6 +772,7 @@
       <li><a href="#modules">Обучение</a></li>
       <li><a href="#quiz">Тест</a></li>
       <li><a href="#tips">Советы</a></li>
+      <li id="navCertLink"><a href="#certificate-section">🏆 Сертификат</a></li>
     </ul>
     <div class="nav-auth-area">
       <div id="navGuest">
@@ -583,22 +810,10 @@
 
   <!-- STATS -->
   <div class="stats">
-    <div class="stat fade-in">
-      <span class="stat-num">91%</span>
-      <div class="stat-label">кибератак начинается с фишинга</div>
-    </div>
-    <div class="stat fade-in">
-      <span class="stat-num">95%</span>
-      <div class="stat-label">инцидентов — из-за ошибок людей</div>
-    </div>
-    <div class="stat fade-in">
-      <span class="stat-num">70%</span>
-      <div class="stat-label">снижение рисков после обучения</div>
-    </div>
-    <div class="stat fade-in">
-      <span class="stat-num">4.5M₽</span>
-      <div class="stat-label">средний ущерб от одного инцидента</div>
-    </div>
+    <div class="stat fade-in"><span class="stat-num">91%</span><div class="stat-label">кибератак начинается с фишинга</div></div>
+    <div class="stat fade-in"><span class="stat-num">95%</span><div class="stat-label">инцидентов — из-за ошибок людей</div></div>
+    <div class="stat fade-in"><span class="stat-num">70%</span><div class="stat-label">снижение рисков после обучения</div></div>
+    <div class="stat fade-in"><span class="stat-num">4.5M₽</span><div class="stat-label">средний ущерб от одного инцидента</div></div>
   </div>
 
   <!-- THREATS -->
@@ -607,42 +822,12 @@
     <h2>Что угрожает вашей организации?</h2>
     <p class="section-desc">Современные киберугрозы становятся всё сложнее. Сотрудники — первый и самый уязвимый рубеж защиты.</p>
     <div class="threats-grid">
-      <div class="threat-card fade-in">
-        <span class="threat-icon">🎣</span>
-        <h3>Фишинг и социальная инженерия</h3>
-        <p>Мошеннические письма, звонки и сообщения, направленные на кражу учётных данных и получение несанкционированного доступа.</p>
-        <span class="threat-level level-high">● Высокий риск</span>
-      </div>
-      <div class="threat-card fade-in">
-        <span class="threat-icon">🔒</span>
-        <h3>Программы-вымогатели</h3>
-        <p>Вредоносное ПО, шифрующее данные организации и требующее выкуп. Распространяется через заражённые вложения и ссылки.</p>
-        <span class="threat-level level-high">● Высокий риск</span>
-      </div>
-      <div class="threat-card fade-in">
-        <span class="threat-icon">🕵️</span>
-        <h3>Утечки конфиденциальных данных</h3>
-        <p>Случайная или преднамеренная передача корпоративной информации третьим лицам через почту, мессенджеры или USB-носители.</p>
-        <span class="threat-level level-med">● Средний риск</span>
-      </div>
-      <div class="threat-card fade-in">
-        <span class="threat-icon">🔑</span>
-        <h3>Слабые и скомпрометированные пароли</h3>
-        <p>Использование простых или повторяющихся паролей открывает злоумышленникам доступ к корпоративным системам.</p>
-        <span class="threat-level level-med">● Средний риск</span>
-      </div>
-      <div class="threat-card fade-in">
-        <span class="threat-icon">📡</span>
-        <h3>Небезопасные сети и удалённый доступ</h3>
-        <p>Подключение к рабочим ресурсам через общедоступный Wi-Fi без VPN создаёт риск перехвата данных.</p>
-        <span class="threat-level level-med">● Средний риск</span>
-      </div>
-      <div class="threat-card fade-in">
-        <span class="threat-icon">💾</span>
-        <h3>Вредоносные устройства и ПО</h3>
-        <p>Подключение сторонних накопителей или установка непроверенного ПО может внести в систему вирусы и трояны.</p>
-        <span class="threat-level level-low">● Управляемый риск</span>
-      </div>
+      <div class="threat-card fade-in"><span class="threat-icon">🎣</span><h3>Фишинг и социальная инженерия</h3><p>Мошеннические письма, звонки и сообщения, направленные на кражу учётных данных и получение несанкционированного доступа.</p><span class="threat-level level-high">● Высокий риск</span></div>
+      <div class="threat-card fade-in"><span class="threat-icon">🔒</span><h3>Программы-вымогатели</h3><p>Вредоносное ПО, шифрующее данные организации и требующее выкуп. Распространяется через заражённые вложения и ссылки.</p><span class="threat-level level-high">● Высокий риск</span></div>
+      <div class="threat-card fade-in"><span class="threat-icon">🕵️</span><h3>Утечки конфиденциальных данных</h3><p>Случайная или преднамеренная передача корпоративной информации третьим лицам через почту, мессенджеры или USB-носители.</p><span class="threat-level level-med">● Средний риск</span></div>
+      <div class="threat-card fade-in"><span class="threat-icon">🔑</span><h3>Слабые и скомпрометированные пароли</h3><p>Использование простых или повторяющихся паролей открывает злоумышленникам доступ к корпоративным системам.</p><span class="threat-level level-med">● Средний риск</span></div>
+      <div class="threat-card fade-in"><span class="threat-icon">📡</span><h3>Небезопасные сети и удалённый доступ</h3><p>Подключение к рабочим ресурсам через общедоступный Wi-Fi без VPN создаёт риск перехвата данных.</p><span class="threat-level level-med">● Средний риск</span></div>
+      <div class="threat-card fade-in"><span class="threat-icon">💾</span><h3>Вредоносные устройства и ПО</h3><p>Подключение сторонних накопителей или установка непроверенного ПО может внести в систему вирусы и трояны.</p><span class="threat-level level-low">● Управляемый риск</span></div>
     </div>
   </section>
 
@@ -654,95 +839,41 @@
     <h2>Учебные модули</h2>
     <p class="section-desc">Структурированная программа охватывает все ключевые аспекты информационной безопасности — от основ до продвинутых практик.</p>
 
-    <!-- Прогресс-бар (только для авторизованных) -->
     <div class="user-progress-bar" id="userProgressBar">
-      <div class="upb-label">
-        Прогресс обучения
-        <span id="progressCount">0 / 6 модулей</span>
-      </div>
-      <div class="upb-track">
-        <div class="upb-fill" id="progressFill" style="width:0%"></div>
-      </div>
+      <div class="upb-label">Прогресс обучения<span id="progressCount">0 / 6 модулей</span></div>
+      <div class="upb-track"><div class="upb-fill" id="progressFill" style="width:0%"></div></div>
     </div>
 
     <div class="modules-list">
       <a class="module-row fade-in" href="https://www.youtube.com/watch?v=FTQVqiIa754" target="_blank" rel="noopener" data-module="1">
         <div class="module-num">01</div>
-        <div class="module-info">
-          <h3>Введение в информационную безопасность</h3>
-          <div class="module-desc">Базовые понятия ИБ, CIA-триада, виды угроз и роль сотрудника в защите организации</div>
-          <div class="module-tags"><span class="module-tag">Базовый</span><span class="module-tag">Лекция</span></div>
-        </div>
-        <div class="module-meta">
-          <div class="module-duration">⏱ 11:12</div>
-          <div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div>
-          <button class="module-complete-btn" id="mbtn-1" data-num="1">Отметить пройденным</button>
-        </div>
+        <div class="module-info"><h3>Введение в информационную безопасность</h3><div class="module-desc">Базовые понятия ИБ, CIA-триада, виды угроз и роль сотрудника в защите организации</div><div class="module-tags"><span class="module-tag">Базовый</span><span class="module-tag">Лекция</span></div></div>
+        <div class="module-meta"><div class="module-duration">⏱ 11:12</div><div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div><button class="module-complete-btn" id="mbtn-1" data-num="1">Отметить пройденным</button></div>
       </a>
       <a class="module-row fade-in" href="https://www.youtube.com/watch?v=cB1X_bADIYA" target="_blank" rel="noopener" data-module="2">
         <div class="module-num">02</div>
-        <div class="module-info">
-          <h3>Распознавание фишинговых атак</h3>
-          <div class="module-desc">Геймификация и симуляции фишинга — какие методы обучения реально меняют поведение сотрудников</div>
-          <div class="module-tags"><span class="module-tag">Базовый</span><span class="module-tag">Практика</span></div>
-        </div>
-        <div class="module-meta">
-          <div class="module-duration">⏱ 18:44</div>
-          <div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div>
-          <button class="module-complete-btn" id="mbtn-2" data-num="2">Отметить пройденным</button>
-        </div>
+        <div class="module-info"><h3>Распознавание фишинговых атак</h3><div class="module-desc">Геймификация и симуляции фишинга — какие методы обучения реально меняют поведение сотрудников</div><div class="module-tags"><span class="module-tag">Базовый</span><span class="module-tag">Практика</span></div></div>
+        <div class="module-meta"><div class="module-duration">⏱ 18:44</div><div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div><button class="module-complete-btn" id="mbtn-2" data-num="2">Отметить пройденным</button></div>
       </a>
       <a class="module-row fade-in" href="https://www.youtube.com/watch?v=8Q-TrSX521A" target="_blank" rel="noopener" data-module="3">
         <div class="module-num">03</div>
-        <div class="module-info">
-          <h3>Управление паролями и аутентификация</h3>
-          <div class="module-desc">Базовые термины ИБ, надёжные пароли, двухфакторная аутентификация и менеджеры паролей</div>
-          <div class="module-tags"><span class="module-tag">Базовый</span><span class="module-tag">Практика</span></div>
-        </div>
-        <div class="module-meta">
-          <div class="module-duration">⏱ 11:30</div>
-          <div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div>
-          <button class="module-complete-btn" id="mbtn-3" data-num="3">Отметить пройденным</button>
-        </div>
+        <div class="module-info"><h3>Управление паролями и аутентификация</h3><div class="module-desc">Базовые термины ИБ, надёжные пароли, двухфакторная аутентификация и менеджеры паролей</div><div class="module-tags"><span class="module-tag">Базовый</span><span class="module-tag">Практика</span></div></div>
+        <div class="module-meta"><div class="module-duration">⏱ 11:30</div><div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div><button class="module-complete-btn" id="mbtn-3" data-num="3">Отметить пройденным</button></div>
       </a>
       <a class="module-row fade-in" href="https://www.youtube.com/watch?v=TIR95rkRxEI" target="_blank" rel="noopener" data-module="4">
         <div class="module-num">04</div>
-        <div class="module-info">
-          <h3>Безопасная работа с данными</h3>
-          <div class="module-desc">Электронный курс Safety Skills — утечки данных по вине сотрудников, классификация и правила работы с информацией</div>
-          <div class="module-tags"><span class="module-tag">Средний</span><span class="module-tag">Курс</span></div>
-        </div>
-        <div class="module-meta">
-          <div class="module-duration">⏱ 2:26</div>
-          <div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div>
-          <button class="module-complete-btn" id="mbtn-4" data-num="4">Отметить пройденным</button>
-        </div>
+        <div class="module-info"><h3>Безопасная работа с данными</h3><div class="module-desc">Электронный курс Safety Skills — утечки данных по вине сотрудников, классификация и правила работы с информацией</div><div class="module-tags"><span class="module-tag">Средний</span><span class="module-tag">Курс</span></div></div>
+        <div class="module-meta"><div class="module-duration">⏱ 2:26</div><div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div><button class="module-complete-btn" id="mbtn-4" data-num="4">Отметить пройденным</button></div>
       </a>
       <a class="module-row fade-in" href="https://www.youtube.com/watch?v=Tiu_rm_WdsQ" target="_blank" rel="noopener" data-module="5">
         <div class="module-num">05</div>
-        <div class="module-info">
-          <h3>Реагирование на инциденты</h3>
-          <div class="module-desc">Основы защиты информации — порядок действий при угрозах, эскалация и документирование инцидентов</div>
-          <div class="module-tags"><span class="module-tag">Средний</span><span class="module-tag">Лекция</span></div>
-        </div>
-        <div class="module-meta">
-          <div class="module-duration">⏱ 12:37</div>
-          <div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div>
-          <button class="module-complete-btn" id="mbtn-5" data-num="5">Отметить пройденным</button>
-        </div>
+        <div class="module-info"><h3>Реагирование на инциденты</h3><div class="module-desc">Основы защиты информации — порядок действий при угрозах, эскалация и документирование инцидентов</div><div class="module-tags"><span class="module-tag">Средний</span><span class="module-tag">Лекция</span></div></div>
+        <div class="module-meta"><div class="module-duration">⏱ 12:37</div><div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div><button class="module-complete-btn" id="mbtn-5" data-num="5">Отметить пройденным</button></div>
       </a>
       <a class="module-row fade-in" href="https://www.youtube.com/watch?v=7zSlz60I2Fg" target="_blank" rel="noopener" data-module="6">
         <div class="module-num">06</div>
-        <div class="module-info">
-          <h3>Физическая безопасность и удалённая работа</h3>
-          <div class="module-desc">Полный курс кибербезопасности для начинающих — VPN, публичные сети, политика чистого стола, блокировка экрана</div>
-          <div class="module-tags"><span class="module-tag">Продвинутый</span><span class="module-tag">Курс</span></div>
-        </div>
-        <div class="module-meta">
-          <div class="module-duration">⏱ 3:06:44</div>
-          <div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div>
-          <button class="module-complete-btn" id="mbtn-6" data-num="6">Отметить пройденным</button>
-        </div>
+        <div class="module-info"><h3>Физическая безопасность и удалённая работа</h3><div class="module-desc">Полный курс кибербезопасности для начинающих — VPN, публичные сети, политика чистого стола, блокировка экрана</div><div class="module-tags"><span class="module-tag">Продвинутый</span><span class="module-tag">Курс</span></div></div>
+        <div class="module-meta"><div class="module-duration">⏱ 3:06:44</div><div class="module-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Смотреть</div><button class="module-complete-btn" id="mbtn-6" data-num="6">Отметить пройденным</button></div>
       </a>
     </div>
   </section>
@@ -765,6 +896,31 @@
         <button class="btn btn-outline" id="quizNext">Следующий →</button>
       </div>
       <div id="quizResult" style="display:none">
+        <!-- 100% PERFECT BANNER -->
+        <div class="quiz-perfect-banner" id="quizPerfectBanner">
+          <span class="pb-icon">🌟</span>
+          <div class="pb-title">Идеальный результат! Поздравляем!</div>
+          <div class="pb-desc">Вы ответили верно на все 40 вопросов — 100% правильных ответов.<br>Вы в совершенстве освоили курс информационной безопасности. Превосходно!</div>
+        </div>
+        <!-- ИСТОРИЯ ПОПЫТОК -->
+        <div class="quiz-history-panel" id="quizHistoryPanel">
+          <div class="qhp-card">
+            <div class="qhp-label">Предыдущая попытка</div>
+            <div class="qhp-score prev" id="qhpPrev">—</div>
+            <div class="qhp-sub" id="qhpPrevSub"></div>
+          </div>
+          <div class="qhp-card">
+            <div class="qhp-label">Текущий результат</div>
+            <div class="qhp-score current" id="qhpCurrent">—</div>
+            <div class="qhp-sub" id="qhpCurrentSub"></div>
+          </div>
+          <div class="qhp-card">
+            <div class="qhp-label">Лучший результат</div>
+            <div class="qhp-score best" id="qhpBest">—</div>
+            <div class="qhp-sub" id="qhpBestSub"></div>
+          </div>
+        </div>
+
         <div class="quiz-result-score" id="quizScoreDisplay"></div>
         <div class="quiz-result-label" id="quizResultLabel"></div>
         <div class="quiz-result-breakdown" id="quizBreakdown"></div>
@@ -775,7 +931,7 @@
 
   <div class="section-divider"></div>
 
-  <!-- CERTIFICATE -->
+  <!-- CERTIFICATE (on-page block) -->
   <section id="certificate-section">
     <div class="section-label">// Сертификат</div>
     <h2>Ваш сертификат</h2>
@@ -791,7 +947,7 @@
       </div>
       <div class="cert-score" id="certScore"></div>
       <div class="cert-date" id="certDate"></div>
-      <button class="cert-print-btn" onclick="window.print()">🖨 Распечатать сертификат</button>
+      <button class="cert-print-btn" id="certPrintBtn">🖨 Распечатать сертификат</button>
     </div>
   </section>
 
@@ -813,8 +969,8 @@
       <div class="tip-card fade-in"><span class="tip-icon">🚫</span><h3>Не подключайте чужие носители</h3><p>Найденная флешка или диск могут содержать вредоносное ПО. Никогда не подключайте незнакомые устройства.</p></div>
       <div class="tip-card fade-in"><span class="tip-icon">📞</span><h3>Сообщайте об инцидентах</h3><p>Заметили подозрительную активность? Немедленно сообщайте в службу информационной безопасности.</p></div>
       <div class="tip-card fade-in"><span class="tip-icon">📚</span><h3>Учитесь постоянно</h3><p>Угрозы меняются каждый день. Проходите обучение, читайте новости ИБ, повышайте осведомлённость.</p></div>
-      <div class="tip-card fade-in"><span class="tip-icon">🔍</span><h3>Проверяйте ссылки перед кликом</h3><p>Наведите курсор на ссылку и посмотрите в строку браузера — адрес должен совпадать с ожидаемым сайтом. Опечатки и странные домены — красный флаг.</p></div>
-      <div class="tip-card fade-in"><span class="tip-icon">🧩</span><h3>Разграничивайте рабочее и личное</h3><p>Не используйте корпоративную почту для личных сервисов. Храните рабочие файлы только на корпоративных ресурсах, не на личных облаках и устройствах.</p></div>
+      <div class="tip-card fade-in"><span class="tip-icon">🔍</span><h3>Проверяйте ссылки перед кликом</h3><p>Наведите курсор на ссылку и посмотрите в строку браузера — адрес должен совпадать с ожидаемым сайтом.</p></div>
+      <div class="tip-card fade-in"><span class="tip-icon">🧩</span><h3>Разграничивайте рабочее и личное</h3><p>Не используйте корпоративную почту для личных сервисов. Храните рабочие файлы только на корпоративных ресурсах.</p></div>
     </div>
   </section>
 
@@ -842,9 +998,7 @@
 
   let _supabase = null;
   function getSupabase() {
-    if (!_supabase) {
-      _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
+    if (!_supabase) _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return _supabase;
   }
 
@@ -852,7 +1006,9 @@
   let currentUser   = null;
   let userProfile   = null;
   let completedMods = new Set();
-  let bestScore     = null;
+  let bestScore     = null;      // { score, total, percentage }
+  let previousScore = null;      // результат предпоследней попытки
+  // currentScore хранится локально в showResult
 
   const ROLE_LABELS = {
     employee: 'Сотрудник', manager: 'Менеджер',
@@ -923,64 +1079,71 @@
   // ============================================================
   document.addEventListener('DOMContentLoaded', function() {
 
-    // --- Fade-in animation setup ---
-    document.querySelectorAll('.fade-in').forEach(el => {
-      el.classList.add('js-animate');
-    });
+    // --- Fade-in animation ---
+    document.querySelectorAll('.fade-in').forEach(el => el.classList.add('js-animate'));
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
-        }
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
       });
     }, { threshold: 0.08 });
     document.querySelectorAll('.fade-in.js-animate').forEach(el => observer.observe(el));
 
-    // --- Modal buttons ---
+    // --- Modal ---
     document.getElementById('openModalBtn').addEventListener('click', openModal);
     document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
-    document.getElementById('authModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
+    document.getElementById('authModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
-    // --- Tab switching ---
+    // --- Tabs ---
     document.getElementById('tabLogin').addEventListener('click', () => switchTab('login'));
     document.getElementById('tabRegister').addEventListener('click', () => switchTab('register'));
 
-    // --- Auth buttons ---
+    // --- Auth ---
     document.getElementById('loginBtn').addEventListener('click', doLogin);
     document.getElementById('registerBtn').addEventListener('click', doRegister);
     document.getElementById('logoutBtn').addEventListener('click', doLogout);
+    document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    document.getElementById('regPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
 
-    // --- Enter key in login fields ---
-    document.getElementById('loginPassword').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') doLogin();
-    });
-    document.getElementById('regPassword').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') doRegister();
-    });
-
-    // --- Quiz buttons ---
+    // --- Quiz ---
     document.getElementById('quizNext').addEventListener('click', nextQuestion);
     document.getElementById('restartQuizBtn').addEventListener('click', restartQuiz);
 
     // --- Module complete buttons ---
     document.querySelectorAll('.module-complete-btn').forEach(btn => {
       btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const num = parseInt(this.dataset.num);
-        toggleModule(num);
+        e.preventDefault(); e.stopPropagation();
+        toggleModule(parseInt(this.dataset.num));
       });
     });
 
-    // --- Init quiz ---
-    renderQuestion();
+    // --- Certificate print button ---
+    document.getElementById('certPrintBtn').addEventListener('click', printCertificate);
 
-    // --- Init Supabase session ---
+    // --- Init ---
+    renderQuestion();
     initAuth();
   });
+
+  // ============================================================
+  //  PRINT CERTIFICATE
+  //  Заполняем скрытый оверлей данными и вызываем window.print()
+  // ============================================================
+  function printCertificate() {
+    const name  = document.getElementById('certName').textContent;
+    const score = document.getElementById('certScore').textContent;
+    const date  = document.getElementById('certDate').textContent;
+
+    document.getElementById('pco-name').textContent  = name;
+    document.getElementById('pco-score').textContent = score.replace('Результат теста: ', '');
+    document.getElementById('pco-date').textContent  = date;
+
+    // Генерируем короткий ID сертификата
+    const certId = (currentUser ? currentUser.id.slice(0,8).toUpperCase() : '--------') +
+                   '-' + new Date().getFullYear();
+    document.getElementById('pco-id').textContent = certId;
+
+    window.print();
+  }
 
   // ============================================================
   //  AUTH
@@ -989,10 +1152,7 @@
     const sb = getSupabase();
     try {
       const { data: { session } } = await sb.auth.getSession();
-      if (session) {
-        currentUser = session.user;
-        await afterLogin();
-      }
+      if (session) { currentUser = session.user; await afterLogin(); }
     } catch(e) { console.warn('Session check failed:', e); }
 
     sb.auth.onAuthStateChange(async (event, session) => {
@@ -1003,11 +1163,8 @@
       }
       if (event === 'SIGNED_OUT') {
         currentUser = null; userProfile = null;
-        completedMods = new Set(); bestScore = null;
-        updateNavUI();
-        updateModuleButtons();
-        updateProgressBar();
-        hideCertificate();
+        completedMods = new Set(); bestScore = null; previousScore = null;
+        updateNavUI(); updateModuleButtons(); updateProgressBar(); hideCertificate();
       }
     });
   }
@@ -1015,11 +1172,8 @@
   async function afterLogin() {
     await loadProfile();
     await loadProgress();
-    await loadBestScore();
-    updateNavUI();
-    updateModuleButtons();
-    updateProgressBar();
-    checkCertificate();
+    await loadScoreHistory();
+    updateNavUI(); updateModuleButtons(); updateProgressBar(); checkCertificate();
   }
 
   async function loadProfile() {
@@ -1038,15 +1192,28 @@
     } catch(e) { console.warn('loadProgress error:', e); }
   }
 
-  async function loadBestScore() {
+  // Загружаем ВСЕ попытки, сортируем по дате — последние 2 дают нам «текущий» и «предыдущий»
+  // Лучший — max по percentage
+  async function loadScoreHistory() {
     const sb = getSupabase();
     try {
-      const { data } = await sb.from('quiz_results').select('score, total, percentage').eq('user_id', currentUser.id).order('percentage', { ascending: false }).limit(1);
-      bestScore = data && data.length > 0 ? data[0] : null;
-    } catch(e) { console.warn('loadBestScore error:', e); }
+      const { data } = await sb
+        .from('quiz_results')
+        .select('score, total, percentage, completed_at')
+        .eq('user_id', currentUser.id)
+        .order('completed_at', { ascending: false });
+
+      if (!data || data.length === 0) { bestScore = null; previousScore = null; return; }
+
+      // Лучший за все попытки
+      bestScore = data.reduce((best, r) => (!best || r.percentage > best.percentage) ? r : best, null);
+      // Предыдущий = вторая по времени запись (индекс 1), текущая = первая (индекс 0)
+      // При загрузке previousScore — это предпоследняя завершённая попытка
+      previousScore = data.length >= 2 ? data[1] : null;
+    } catch(e) { console.warn('loadScoreHistory error:', e); }
   }
 
-  // ── UI ────────────────────────────────────────────────────────
+  // ── UI ─────────────────────────────────────────────────────────
   function updateNavUI() {
     const guest = document.getElementById('navGuest');
     const user  = document.getElementById('navUser');
@@ -1065,17 +1232,14 @@
     for (let i = 1; i <= 6; i++) {
       const btn = document.getElementById('mbtn-' + i);
       if (!btn) continue;
-      if (!currentUser) {
-        btn.style.display = 'none';
+      if (!currentUser) { btn.style.display = 'none'; continue; }
+      btn.style.display = 'inline-flex';
+      if (completedMods.has(i)) {
+        btn.textContent = '✅ Пройден';
+        btn.classList.add('done');
       } else {
-        btn.style.display = 'inline-flex';
-        if (completedMods.has(i)) {
-          btn.textContent = '✅ Пройден';
-          btn.classList.add('done');
-        } else {
-          btn.textContent = 'Отметить пройденным';
-          btn.classList.remove('done');
-        }
+        btn.textContent = 'Отметить пройденным';
+        btn.classList.remove('done');
       }
     }
   }
@@ -1091,15 +1255,19 @@
 
   function checkCertificate() {
     const section = document.getElementById('certificate-section');
+    const navLink = document.getElementById('navCertLink');
     if (!currentUser || !userProfile) { hideCertificate(); return; }
     const allDone = completedMods.size >= 6;
     const passed  = bestScore && bestScore.percentage >= 65;
     if (allDone && passed) {
       section.classList.add('visible');
+      navLink.style.display = 'list-item';
+
       document.getElementById('certName').textContent  = userProfile.full_name || currentUser.email;
-      document.getElementById('certScore').textContent = 'Результат теста: ' + bestScore.score + ' / ' + bestScore.total + ' (' + bestScore.percentage + '%)';
-      const now = new Date().toLocaleDateString('ru-RU', { year:'numeric', month:'long', day:'numeric' });
-      document.getElementById('certDate').textContent  = 'Дата выдачи: ' + now;
+      document.getElementById('certScore').textContent =
+        'Результат теста: ' + bestScore.score + ' / ' + bestScore.total + ' (' + bestScore.percentage + '%)';
+      const dateStr = new Date(bestScore.completed_at).toLocaleDateString('ru-RU', { year:'numeric', month:'long', day:'numeric' });
+      document.getElementById('certDate').textContent  = 'Дата выдачи: ' + dateStr;
       saveCertificate();
     } else {
       hideCertificate();
@@ -1108,6 +1276,7 @@
 
   function hideCertificate() {
     document.getElementById('certificate-section').classList.remove('visible');
+    document.getElementById('navCertLink').style.display = 'none';
   }
 
   async function saveCertificate() {
@@ -1115,7 +1284,7 @@
     const sb = getSupabase();
     try {
       await sb.from('certificates').upsert({
-        user_id: currentUser.id, score: bestScore.score, issued_at: new Date().toISOString()
+        user_id: currentUser.id, score: bestScore.score, issued_at: bestScore.completed_at
       }, { onConflict: 'user_id' });
     } catch(e) { console.warn('saveCertificate error:', e); }
   }
@@ -1130,12 +1299,7 @@
         user_id: currentUser.id, module_number: num,
         completed: true, completed_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_number' });
-      if (!error) {
-        completedMods.add(num);
-        updateModuleButtons();
-        updateProgressBar();
-        checkCertificate();
-      }
+      if (!error) { completedMods.add(num); updateModuleButtons(); updateProgressBar(); checkCertificate(); }
     } catch(e) { console.warn('toggleModule error:', e); }
   }
 
@@ -1155,15 +1319,11 @@
     const password = document.getElementById('loginPassword').value;
     const errEl    = document.getElementById('loginError');
     errEl.classList.remove('show');
-    if (!email || !password) {
-      errEl.textContent = 'Заполните все поля.';
-      errEl.classList.add('show'); return;
-    }
+    if (!email || !password) { errEl.textContent = 'Заполните все поля.'; errEl.classList.add('show'); return; }
     const sb = getSupabase();
     const { error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
-      errEl.textContent = error.message === 'Invalid login credentials'
-        ? 'Неверный email или пароль.' : error.message;
+      errEl.textContent = error.message === 'Invalid login credentials' ? 'Неверный email или пароль.' : error.message;
       errEl.classList.add('show');
     }
   }
@@ -1176,35 +1336,18 @@
     const password = document.getElementById('regPassword').value;
     const errEl    = document.getElementById('registerError');
     const okEl     = document.getElementById('registerSuccess');
-    errEl.classList.remove('show');
-    okEl.classList.remove('show');
+    errEl.classList.remove('show'); okEl.classList.remove('show');
 
-    if (!name || !email || !password) {
-      errEl.textContent = 'Заполните имя, email и пароль.';
-      errEl.classList.add('show'); return;
-    }
-    if (password.length < 6) {
-      errEl.textContent = 'Пароль должен быть минимум 6 символов.';
-      errEl.classList.add('show'); return;
-    }
+    if (!name || !email || !password) { errEl.textContent = 'Заполните имя, email и пароль.'; errEl.classList.add('show'); return; }
+    if (password.length < 6) { errEl.textContent = 'Пароль должен быть минимум 6 символов.'; errEl.classList.add('show'); return; }
 
     const sb = getSupabase();
-    const { data, error } = await sb.auth.signUp({
-      email, password,
-      options: { data: { full_name: name } }
-    });
+    const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name: name } } });
+    if (error) { errEl.textContent = error.message; errEl.classList.add('show'); return; }
 
-    if (error) {
-      errEl.textContent = error.message;
-      errEl.classList.add('show'); return;
-    }
-
-    // Upsert profile with role/dept (trigger handles basic insert, we upsert with extra fields)
     if (data.user) {
       try {
-        await sb.from('profiles').upsert({
-          id: data.user.id, email, full_name: name, role, department: dept
-        }, { onConflict: 'id' });
+        await sb.from('profiles').upsert({ id: data.user.id, email, full_name: name, role, department: dept }, { onConflict: 'id' });
       } catch(e) { console.warn('profile upsert error:', e); }
     }
 
@@ -1226,7 +1369,7 @@
     const q   = questions[quizCurrent];
     const pct = (quizCurrent / questions.length) * 100;
 
-    document.getElementById('quizProgressBar').style.width = pct + '%';
+    document.getElementById('quizProgressBar').style.width  = pct + '%';
     document.getElementById('quizProgressLabel').textContent = 'Вопрос ' + (quizCurrent + 1) + ' из ' + questions.length;
     document.getElementById('quizNav').style.display    = 'none';
     document.getElementById('quizResult').style.display = 'none';
@@ -1236,17 +1379,12 @@
       '<div class="quiz-module-tag">' + q.module + '</div>' +
       '<div class="quiz-question">' + q.q + '</div>' +
       '<div class="quiz-options" id="quizOptions">' +
-        q.options.map((o, i) =>
-          '<button class="quiz-option" data-idx="' + i + '">' + o + '</button>'
-        ).join('') +
+        q.options.map((o, i) => '<button class="quiz-option" data-idx="' + i + '">' + o + '</button>').join('') +
       '</div>' +
       '<div class="quiz-feedback" id="quizFeedback"></div>';
 
-    // Attach option listeners
     body.querySelectorAll('.quiz-option').forEach(btn => {
-      btn.addEventListener('click', function() {
-        selectOption(parseInt(this.dataset.idx));
-      });
+      btn.addEventListener('click', function() { selectOption(parseInt(this.dataset.idx)); });
     });
   }
 
@@ -1262,37 +1400,53 @@
     btns[idx].classList.add(idx === q.correct ? 'correct' : 'wrong');
     btns[q.correct].classList.add('correct');
 
-    if (idx === q.correct) {
-      quizScore++;
-      moduleScores[q.module].correct++;
-    }
+    if (idx === q.correct) { quizScore++; moduleScores[q.module].correct++; }
 
     const fb = document.getElementById('quizFeedback');
     fb.textContent = (idx === q.correct ? '✅ Верно! ' : '❌ Неверно. ') + q.feedback;
-    fb.className = 'quiz-feedback show ' + (idx === q.correct ? 'ok' : 'err');
+    fb.className   = 'quiz-feedback show ' + (idx === q.correct ? 'ok' : 'err');
 
     document.getElementById('quizNav').style.display = 'flex';
-    if (quizCurrent === questions.length - 1) {
-      document.getElementById('quizNext').textContent = 'Посмотреть результат →';
-    }
+    if (quizCurrent === questions.length - 1) document.getElementById('quizNext').textContent = 'Посмотреть результат →';
   }
 
   function nextQuestion() {
-    if (quizCurrent < questions.length - 1) {
-      quizCurrent++;
-      renderQuestion();
-    } else {
-      showResult();
-    }
+    if (quizCurrent < questions.length - 1) { quizCurrent++; renderQuestion(); }
+    else showResult();
   }
 
   async function showResult() {
-    document.getElementById('quizProgressBar').style.width = '100%';
+    document.getElementById('quizProgressBar').style.width   = '100%';
     document.getElementById('quizProgressLabel').textContent = 'Тест завершён';
     document.getElementById('quizBody').innerHTML = '';
     document.getElementById('quizNav').style.display = 'none';
 
     const pct = Math.round((quizScore / questions.length) * 100);
+
+    // === Сохраняем текущий результат в Supabase ===
+    let savedPrev = previousScore;  // значение до сохранения
+    let savedBest = bestScore;
+
+    if (currentUser) {
+      const sb = getSupabase();
+      const breakdown = {};
+      MODULE_NAMES.forEach(m => { breakdown[m] = { correct: moduleScores[m].correct, total: moduleScores[m].total }; });
+      try {
+        await sb.from('quiz_results').insert({
+          user_id: currentUser.id, score: quizScore, total: questions.length,
+          percentage: pct, module_breakdown: breakdown, completed_at: new Date().toISOString()
+        });
+        // Обновляем историю из базы — теперь previousScore = то что было до этой попытки
+        await loadScoreHistory();
+        // Предыдущий для отображения = savedPrev (была до этой попытки), или новая [1] запись
+        // После loadScoreHistory previousScore уже обновлён (вторая запись по времени — это и есть предыдущая)
+        savedPrev = previousScore;
+        savedBest = bestScore;
+        checkCertificate();
+      } catch(e) { console.warn('quiz save error:', e); }
+    }
+
+    // === Красивый результат ===
     let label, color;
     if (pct >= 85)      { label = '🏆 Отличный результат! Вы хорошо владеете основами ИБ.'; color = 'var(--success)'; }
     else if (pct >= 65) { label = '👍 Хороший результат. Повторите слабые модули.'; color = '#ffa500'; }
@@ -1303,6 +1457,42 @@
     document.getElementById('quizResultLabel').innerHTML =
       pct + '% правильных ответов<br><span style="font-size:1rem;color:var(--text-dim)">' + label + '</span>';
 
+    // === 100% баннер ===
+    const perfectBanner = document.getElementById('quizPerfectBanner');
+    if (pct === 100) {
+      perfectBanner.classList.add('show');
+    } else {
+      perfectBanner.classList.remove('show');
+    }
+
+    // === История попыток ===
+    const histPanel = document.getElementById('quizHistoryPanel');
+    // Показываем панель всегда — текущий результат всегда есть
+    histPanel.classList.add('show');
+
+    // Текущий
+    document.getElementById('qhpCurrent').textContent = quizScore + '/' + questions.length;
+    document.getElementById('qhpCurrentSub').textContent = pct + '%';
+
+    // Предыдущий
+    if (savedPrev) {
+      document.getElementById('qhpPrev').textContent = savedPrev.score + '/' + savedPrev.total;
+      document.getElementById('qhpPrevSub').textContent = savedPrev.percentage + '%';
+    } else {
+      document.getElementById('qhpPrev').textContent = '—';
+      document.getElementById('qhpPrevSub').textContent = 'Первая попытка';
+    }
+
+    // Лучший
+    if (savedBest) {
+      document.getElementById('qhpBest').textContent = savedBest.score + '/' + savedBest.total;
+      document.getElementById('qhpBestSub').textContent = savedBest.percentage + '%';
+    } else {
+      document.getElementById('qhpBest').textContent = quizScore + '/' + questions.length;
+      document.getElementById('qhpBestSub').textContent = pct + '%';
+    }
+
+    // === Breakdown по модулям ===
     const bd = document.getElementById('quizBreakdown');
     bd.innerHTML = MODULE_NAMES.map(m => {
       const s  = moduleScores[m];
@@ -1315,27 +1505,14 @@
     }).join('');
 
     document.getElementById('quizResult').style.display = 'block';
-
-    // Save to Supabase if logged in
-    if (currentUser) {
-      const sb = getSupabase();
-      const breakdown = {};
-      MODULE_NAMES.forEach(m => { breakdown[m] = { correct: moduleScores[m].correct, total: moduleScores[m].total }; });
-      try {
-        await sb.from('quiz_results').insert({
-          user_id: currentUser.id, score: quizScore, total: questions.length,
-          percentage: pct, module_breakdown: breakdown, completed_at: new Date().toISOString()
-        });
-        await loadBestScore();
-        checkCertificate();
-      } catch(e) { console.warn('quiz save error:', e); }
-    }
   }
 
   function restartQuiz() {
     quizCurrent = 0; quizScore = 0; quizAnswered = false;
     MODULE_NAMES.forEach(m => moduleScores[m] = { correct: 0, total: 0 });
     document.getElementById('quizNext').textContent = 'Следующий →';
+    document.getElementById('quizPerfectBanner').classList.remove('show');
+    document.getElementById('quizHistoryPanel').classList.remove('show');
     renderQuestion();
   }
 
