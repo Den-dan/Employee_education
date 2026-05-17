@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -82,6 +83,358 @@
 
     .nav-links a:hover { color: var(--accent); }
 
+    /* === AUTH NAV BUTTON === */
+    .nav-auth-area {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .nav-user-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--text);
+    }
+
+    .nav-role-badge {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      background: rgba(0,212,255,0.1);
+      color: var(--accent);
+      border: 1px solid rgba(0,212,255,0.25);
+    }
+
+    .btn-nav {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0.5rem 1.2rem;
+      border-radius: 2px;
+      cursor: pointer;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      transition: all 0.2s;
+    }
+
+    .btn-nav:hover { background: rgba(0,212,255,0.1); }
+
+    .btn-nav-logout {
+      border-color: var(--text-dim);
+      color: var(--text-dim);
+    }
+
+    .btn-nav-logout:hover { border-color: var(--danger); color: var(--danger); background: rgba(255,59,92,0.05); }
+
+    /* === MODAL === */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5,11,20,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      box-shadow: var(--glow);
+    }
+
+    .modal-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+      margin-bottom: 0.4rem;
+    }
+
+    .modal-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 1.8rem;
+    }
+
+    .modal-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-tab {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0.6rem 1.2rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      margin-bottom: -1px;
+    }
+
+    .modal-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .modal-form { display: flex; flex-direction: column; gap: 1rem; }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    .form-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .form-input, .form-select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.7rem 1rem;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .form-input:focus, .form-select:focus { border-color: var(--accent); }
+
+    .form-select option { background: var(--surface); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .modal-error {
+      background: rgba(255,59,92,0.1);
+      border: 1px solid var(--danger);
+      border-radius: 3px;
+      padding: 0.7rem 1rem;
+      font-size: 0.85rem;
+      color: var(--danger);
+      display: none;
+    }
+
+    .modal-error.show { display: block; }
+
+    .modal-success {
+      background: rgba(0,229,160,0.1);
+      border: 1px solid var(--success);
+      border-radius: 3px;
+      padding: 0.7rem 1rem;
+      font-size: 0.85rem;
+      color: var(--success);
+      display: none;
+    }
+
+    .modal-success.show { display: block; }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover { color: var(--accent); }
+
+    /* === PROGRESS BAR ON MODULES === */
+    .user-progress-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .user-progress-bar.visible { display: block; }
+
+    .upb-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .upb-label span { color: var(--accent); }
+
+    .upb-track {
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .upb-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      border-radius: 3px;
+      transition: width 0.6s ease;
+    }
+
+    /* === MODULE COMPLETE BUTTON === */
+    .module-complete-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+      border: 1px solid var(--text-dim);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 0.4rem;
+      white-space: nowrap;
+    }
+
+    .module-complete-btn:hover { border-color: var(--success); color: var(--success); }
+    .module-complete-btn.done { border-color: var(--success); color: var(--success); background: rgba(0,229,160,0.08); cursor: default; }
+
+    /* === CERTIFICATE SECTION === */
+    #certificate-section {
+      display: none;
+    }
+
+    #certificate-section.visible {
+      display: block;
+    }
+
+    .certificate-box {
+      background: var(--surface);
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 4px;
+      padding: 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .certificate-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(0,212,255,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .cert-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .cert-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .cert-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0.5rem 0;
+    }
+
+    .cert-desc {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    .cert-score {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 0.5rem;
+    }
+
+    .cert-date {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+    }
+
+    .cert-print-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.7rem 2rem;
+      border-radius: 2px;
+      cursor: pointer;
+      border: 1px solid var(--accent);
+      background: rgba(0,212,255,0.08);
+      color: var(--accent);
+      transition: all 0.2s;
+    }
+
+    .cert-print-btn:hover { background: rgba(0,212,255,0.18); }
+
+    /* === HERO === */
     .hero {
       position: relative;
       min-height: 100vh;
@@ -691,6 +1044,70 @@
 </head>
 <body>
 
+  <!-- ===================== MODAL AUTH ===================== -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-title">ИБАкадемия</div>
+      <div class="modal-subtitle">Войдите или создайте аккаунт</div>
+
+      <div class="modal-tabs">
+        <button class="modal-tab active" id="tabLogin" onclick="switchTab('login')">Вход</button>
+        <button class="modal-tab" id="tabRegister" onclick="switchTab('register')">Регистрация</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="formLogin" class="modal-form">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="loginEmail" placeholder="you@company.ru" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Пароль</label>
+          <input class="form-input" type="password" id="loginPassword" placeholder="••••••••" />
+        </div>
+        <div class="modal-error" id="loginError"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:0.5rem;" onclick="doLogin()">Войти →</button>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="formRegister" class="modal-form" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Полное имя</label>
+          <input class="form-input" type="text" id="regName" placeholder="Иван Иванов" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="regEmail" placeholder="you@company.ru" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Должность</label>
+            <select class="form-select" id="regRole">
+              <option value="employee">Сотрудник</option>
+              <option value="manager">Менеджер</option>
+              <option value="it">IT-специалист</option>
+              <option value="hr">HR</option>
+              <option value="admin">Администратор</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Отдел</label>
+            <input class="form-input" type="text" id="regDept" placeholder="Бухгалтерия" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Пароль</label>
+          <input class="form-input" type="password" id="regPassword" placeholder="Минимум 6 символов" />
+        </div>
+        <div class="modal-error" id="registerError"></div>
+        <div class="modal-success" id="registerSuccess"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:0.5rem;" onclick="doRegister()">Создать аккаунт →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== NAV ===================== -->
   <nav>
     <a class="nav-logo" href="#"><span>ИБ</span>Академия</a>
     <ul class="nav-links">
@@ -699,8 +1116,21 @@
       <li><a href="#quiz">Тест</a></li>
       <li><a href="#tips">Советы</a></li>
     </ul>
+    <div class="nav-auth-area">
+      <!-- Показывается когда НЕ залогинен -->
+      <div id="navGuest">
+        <button class="btn-nav" onclick="openModal()">Войти / Регистрация</button>
+      </div>
+      <!-- Показывается когда залогинен -->
+      <div id="navUser" style="display:none" class="nav-user-info">
+        <span class="nav-role-badge" id="navRoleBadge"></span>
+        <span class="nav-user-name" id="navUserName"></span>
+        <button class="btn-nav btn-nav-logout" onclick="doLogout()">Выйти</button>
+      </div>
+    </div>
   </nav>
 
+  <!-- ===================== HERO ===================== -->
   <div class="hero">
     <div class="hero-orb"></div>
     <div class="hero-orb2"></div>
@@ -722,6 +1152,7 @@
     </div>
   </div>
 
+  <!-- ===================== STATS ===================== -->
   <div class="stats">
     <div class="stat fade-in">
       <span class="stat-num">91%</span>
@@ -741,6 +1172,7 @@
     </div>
   </div>
 
+  <!-- ===================== THREATS ===================== -->
   <section id="threats">
     <div class="section-label">// Актуальные угрозы</div>
     <h2>Что угрожает вашей организации?</h2>
@@ -788,13 +1220,25 @@
 
   <div class="section-divider"></div>
 
+  <!-- ===================== MODULES ===================== -->
   <section id="modules">
     <div class="section-label">// Программа обучения</div>
     <h2>Учебные модули</h2>
     <p class="section-desc">Структурированная программа охватывает все ключевые аспекты информационной безопасности — от основ до продвинутых практик.</p>
 
+    <!-- Прогресс-бар (только для авторизованных) -->
+    <div class="user-progress-bar" id="userProgressBar">
+      <div class="upb-label">
+        Прогресс обучения
+        <span id="progressCount">0 / 6 модулей</span>
+      </div>
+      <div class="upb-track">
+        <div class="upb-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+
     <div class="modules-list">
-      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=FTQVqiIa754" target="_blank" rel="noopener">
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=FTQVqiIa754" target="_blank" rel="noopener" data-module="1">
         <div class="module-num">01</div>
         <div class="module-info">
           <h3>Введение в информационную безопасность</h3>
@@ -810,9 +1254,10 @@
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             Смотреть
           </div>
+          <button class="module-complete-btn" id="mbtn-1" onclick="toggleModule(event, 1)">Отметить пройденным</button>
         </div>
       </a>
-      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=cB1X_bADIYA" target="_blank" rel="noopener">
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=cB1X_bADIYA" target="_blank" rel="noopener" data-module="2">
         <div class="module-num">02</div>
         <div class="module-info">
           <h3>Распознавание фишинговых атак</h3>
@@ -828,9 +1273,10 @@
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             Смотреть
           </div>
+          <button class="module-complete-btn" id="mbtn-2" onclick="toggleModule(event, 2)">Отметить пройденным</button>
         </div>
       </a>
-      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=8Q-TrSX521A" target="_blank" rel="noopener">
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=8Q-TrSX521A" target="_blank" rel="noopener" data-module="3">
         <div class="module-num">03</div>
         <div class="module-info">
           <h3>Управление паролями и аутентификация</h3>
@@ -846,9 +1292,10 @@
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             Смотреть
           </div>
+          <button class="module-complete-btn" id="mbtn-3" onclick="toggleModule(event, 3)">Отметить пройденным</button>
         </div>
       </a>
-      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=TIR95rkRxEI" target="_blank" rel="noopener">
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=TIR95rkRxEI" target="_blank" rel="noopener" data-module="4">
         <div class="module-num">04</div>
         <div class="module-info">
           <h3>Безопасная работа с данными</h3>
@@ -864,9 +1311,10 @@
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             Смотреть
           </div>
+          <button class="module-complete-btn" id="mbtn-4" onclick="toggleModule(event, 4)">Отметить пройденным</button>
         </div>
       </a>
-      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=Tiu_rm_WdsQ" target="_blank" rel="noopener">
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=Tiu_rm_WdsQ" target="_blank" rel="noopener" data-module="5">
         <div class="module-num">05</div>
         <div class="module-info">
           <h3>Реагирование на инциденты</h3>
@@ -882,9 +1330,10 @@
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             Смотреть
           </div>
+          <button class="module-complete-btn" id="mbtn-5" onclick="toggleModule(event, 5)">Отметить пройденным</button>
         </div>
       </a>
-      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=7zSlz60I2Fg" target="_blank" rel="noopener">
+      <a class="module-row fade-in" href="https://www.youtube.com/watch?v=7zSlz60I2Fg" target="_blank" rel="noopener" data-module="6">
         <div class="module-num">06</div>
         <div class="module-info">
           <h3>Физическая безопасность и удалённая работа</h3>
@@ -900,6 +1349,7 @@
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             Смотреть
           </div>
+          <button class="module-complete-btn" id="mbtn-6" onclick="toggleModule(event, 6)">Отметить пройденным</button>
         </div>
       </a>
     </div>
@@ -907,6 +1357,7 @@
 
   <div class="section-divider"></div>
 
+  <!-- ===================== QUIZ ===================== -->
   <section id="quiz">
     <div class="section-label">// Проверь знания</div>
     <h2>Итоговый тест — 40 вопросов</h2>
@@ -936,6 +1387,30 @@
 
   <div class="section-divider"></div>
 
+  <!-- ===================== CERTIFICATE ===================== -->
+  <section id="certificate-section">
+    <div class="section-label">// Сертификат</div>
+    <h2>Ваш сертификат</h2>
+    <p class="section-desc">Выдаётся при прохождении всех 6 модулей и результате теста не ниже 65%.</p>
+
+    <div class="certificate-box fade-in">
+      <span class="cert-icon">🏆</span>
+      <div class="cert-title">Сертификат о прохождении</div>
+      <div class="cert-name" id="certName">—</div>
+      <div class="cert-desc">
+        успешно прошёл(ла) курс<br>
+        <strong style="color:var(--text)">«Информационная безопасность для сотрудников»</strong><br>
+        и продемонстрировал(а) знание основ киберзащиты
+      </div>
+      <div class="cert-score" id="certScore"></div>
+      <div class="cert-date" id="certDate"></div>
+      <button class="cert-print-btn" onclick="window.print()">🖨 Распечатать сертификат</button>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ===================== TIPS ===================== -->
   <section id="tips">
     <div class="section-label">// Правила безопасности</div>
     <h2>12 правил кибергигиены</h2>
@@ -1005,6 +1480,7 @@
     </div>
   </section>
 
+  <!-- ===================== FOOTER ===================== -->
   <footer>
     <div>
       <div class="footer-logo">ИБАкадемия</div>
@@ -1017,7 +1493,281 @@
     </div>
   </footer>
 
+  <!-- ===================== SUPABASE SDK ===================== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
+    // ============================================================
+    //  ⚙️  ВСТАВЬ СВОИ ДАННЫЕ ИЗ SUPABASE:
+    //  Settings → API → Project URL  и  anon public key
+    // ============================================================
+    const SUPABASE_URL  = 'https://unndknzvmeppextuycaf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVubmRrbnp2bWVwcGV4dHV5Y2FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMTk3NjQsImV4cCI6MjA5NDU5NTc2NH0.bmOWd_kTfqNERjLZ3qZjDvNdjm68Nsbv4R-D00wdKDI';
+    // ============================================================
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ─── Состояние ───────────────────────────────────────────────
+    let currentUser   = null;
+    let userProfile   = null;
+    let completedMods = new Set();
+    let bestScore     = null;
+
+    const ROLE_LABELS = {
+      employee: 'Сотрудник',
+      manager:  'Менеджер',
+      it:       'IT-специалист',
+      hr:       'HR',
+      admin:    'Администратор'
+    };
+
+    // ─── Инициализация ───────────────────────────────────────────
+    async function init() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        currentUser = session.user;
+        await loadProfile();
+        await loadProgress();
+        await loadBestScore();
+        updateNavUI();
+        updateModuleButtons();
+        updateProgressBar();
+        checkCertificate();
+      }
+
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          currentUser = session.user;
+          await loadProfile();
+          await loadProgress();
+          await loadBestScore();
+          updateNavUI();
+          updateModuleButtons();
+          updateProgressBar();
+          checkCertificate();
+          closeModal();
+        }
+        if (event === 'SIGNED_OUT') {
+          currentUser = null; userProfile = null;
+          completedMods = new Set(); bestScore = null;
+          updateNavUI();
+          updateModuleButtons();
+          updateProgressBar();
+          hideCertificate();
+        }
+      });
+    }
+
+    async function loadProfile() {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+      userProfile = data;
+    }
+
+    async function loadProgress() {
+      const { data } = await supabase
+        .from('module_progress')
+        .select('module_number, completed')
+        .eq('user_id', currentUser.id)
+        .eq('completed', true);
+      completedMods = new Set((data || []).map(r => r.module_number));
+    }
+
+    async function loadBestScore() {
+      const { data } = await supabase
+        .from('quiz_results')
+        .select('score, total, percentage')
+        .eq('user_id', currentUser.id)
+        .order('percentage', { ascending: false })
+        .limit(1);
+      bestScore = data && data.length > 0 ? data[0] : null;
+    }
+
+    // ─── UI ──────────────────────────────────────────────────────
+    function updateNavUI() {
+      const guest = document.getElementById('navGuest');
+      const user  = document.getElementById('navUser');
+      if (currentUser && userProfile) {
+        guest.style.display = 'none';
+        user.style.display  = 'flex';
+        document.getElementById('navUserName').textContent  = userProfile.full_name || currentUser.email;
+        document.getElementById('navRoleBadge').textContent = ROLE_LABELS[userProfile.role] || userProfile.role;
+      } else {
+        guest.style.display = 'block';
+        user.style.display  = 'none';
+      }
+    }
+
+    function updateModuleButtons() {
+      for (let i = 1; i <= 6; i++) {
+        const btn = document.getElementById(`mbtn-${i}`);
+        if (!btn) continue;
+        if (!currentUser) {
+          btn.style.display = 'none';
+        } else {
+          btn.style.display = 'inline-flex';
+          if (completedMods.has(i)) {
+            btn.textContent = '✅ Пройден';
+            btn.classList.add('done');
+          } else {
+            btn.textContent = 'Отметить пройденным';
+            btn.classList.remove('done');
+          }
+        }
+      }
+    }
+
+    function updateProgressBar() {
+      const bar = document.getElementById('userProgressBar');
+      if (!currentUser) { bar.classList.remove('visible'); return; }
+      bar.classList.add('visible');
+      const n = completedMods.size;
+      document.getElementById('progressCount').textContent = `${n} / 6 модулей`;
+      document.getElementById('progressFill').style.width  = `${Math.round(n / 6 * 100)}%`;
+    }
+
+    function checkCertificate() {
+      const section = document.getElementById('certificate-section');
+      if (!currentUser || !userProfile) { hideCertificate(); return; }
+      const allDone = completedMods.size >= 6;
+      const passed  = bestScore && bestScore.percentage >= 65;
+      if (allDone && passed) {
+        section.classList.add('visible');
+        document.getElementById('certName').textContent  = userProfile.full_name || currentUser.email;
+        document.getElementById('certScore').textContent = `Результат теста: ${bestScore.score} / ${bestScore.total} (${bestScore.percentage}%)`;
+        const now = new Date().toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('certDate').textContent  = `Дата выдачи: ${now}`;
+        saveCertificate();
+      } else {
+        hideCertificate();
+      }
+    }
+
+    function hideCertificate() {
+      document.getElementById('certificate-section').classList.remove('visible');
+    }
+
+    async function saveCertificate() {
+      if (!currentUser || !bestScore) return;
+      await supabase.from('certificates').upsert({
+        user_id:   currentUser.id,
+        score:     bestScore.score,
+        issued_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+    }
+
+    // ─── Модули ──────────────────────────────────────────────────
+    async function toggleModule(event, num) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!currentUser) { openModal(); return; }
+      if (completedMods.has(num)) return;
+
+      const { error } = await supabase.from('module_progress').upsert({
+        user_id:       currentUser.id,
+        module_number: num,
+        completed:     true,
+        completed_at:  new Date().toISOString()
+      }, { onConflict: 'user_id,module_number' });
+
+      if (!error) {
+        completedMods.add(num);
+        updateModuleButtons();
+        updateProgressBar();
+        checkCertificate();
+      }
+    }
+
+    // ─── Авторизация ─────────────────────────────────────────────
+    function openModal()  { document.getElementById('authModal').classList.add('open'); }
+    function closeModal() { document.getElementById('authModal').classList.remove('open'); }
+
+    function switchTab(tab) {
+      document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+      document.getElementById('formLogin').style.display    = tab === 'login'    ? 'flex' : 'none';
+      document.getElementById('formRegister').style.display = tab === 'register' ? 'flex' : 'none';
+    }
+
+    async function doLogin() {
+      const email    = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const errEl    = document.getElementById('loginError');
+      errEl.classList.remove('show');
+
+      if (!email || !password) {
+        errEl.textContent = 'Заполните все поля.';
+        errEl.classList.add('show'); return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        errEl.textContent = error.message === 'Invalid login credentials'
+          ? 'Неверный email или пароль.' : error.message;
+        errEl.classList.add('show');
+      }
+    }
+
+    async function doRegister() {
+      const name     = document.getElementById('regName').value.trim();
+      const email    = document.getElementById('regEmail').value.trim();
+      const role     = document.getElementById('regRole').value;
+      const dept     = document.getElementById('regDept').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const errEl    = document.getElementById('registerError');
+      const okEl     = document.getElementById('registerSuccess');
+      errEl.classList.remove('show');
+      okEl.classList.remove('show');
+
+      if (!name || !email || !password) {
+        errEl.textContent = 'Заполните имя, email и пароль.';
+        errEl.classList.add('show'); return;
+      }
+      if (password.length < 6) {
+        errEl.textContent = 'Пароль должен быть минимум 6 символов.';
+        errEl.classList.add('show'); return;
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email, password,
+        options: { data: { full_name: name } }
+      });
+
+      if (error) {
+        errEl.textContent = error.message; errEl.classList.add('show'); return;
+      }
+
+      // Обновляем профиль с ролью и отделом
+      if (data.user) {
+        await supabase.from('profiles').upsert({
+          id:         data.user.id,
+          email:      email,
+          full_name:  name,
+          role:       role,
+          department: dept
+        });
+      }
+
+      okEl.textContent = 'Аккаунт создан! Войдите с вашими данными.';
+      okEl.classList.add('show');
+      setTimeout(() => switchTab('login'), 2000);
+    }
+
+    async function doLogout() {
+      await supabase.auth.signOut();
+    }
+
+    // ─── Закрыть модал по клику вне ─────────────────────────────
+    document.getElementById('authModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    // ============================================================
+    //  ТЕСТ — весь оригинальный код без изменений
+    // ============================================================
     const questions = [
       {
         module: "Модуль 1 · Введение в ИБ",
@@ -1068,7 +1818,6 @@
         correct: 1,
         feedback: "Социальная инженерия — это психологические манипуляции, при которых злоумышленник обманом заставляет людей раскрывать информацию или выполнять опасные действия."
       },
-
       {
         module: "Модуль 2 · Фишинг",
         q: "Вы получили письмо от «службы безопасности банка» с просьбой срочно подтвердить данные карты, перейдя по ссылке. Что делать?",
@@ -1118,7 +1867,6 @@
         correct: 1,
         feedback: "Главное — немедленно сообщить специалистам. Чем быстрее отреагирует IT-отдел, тем меньше ущерб. Скрывать инцидент — худшая стратегия."
       },
-
       {
         module: "Модуль 3 · Пароли и аутентификация",
         q: "Какой пароль является наиболее надёжным?",
@@ -1168,7 +1916,6 @@
         correct: 1,
         feedback: "Брутфорс — метод взлома путём перебора всех возможных паролей. Длинный пароль из случайных символов делает брутфорс практически невозможным."
       },
-
       {
         module: "Модуль 4 · Работа с данными",
         q: "Как называется процесс преобразования данных в нечитаемый формат для защиты от несанкционированного доступа?",
@@ -1211,7 +1958,6 @@
         correct: 1,
         feedback: "Утечка данных — любой инцидент, при котором конфиденциальная информация становится доступной неавторизованным лицам. Может быть случайной или преднамеренной."
       },
-
       {
         module: "Модуль 5 · Реагирование на инциденты",
         q: "Что является первым признаком того, что компьютер заражён вирусом-шифровальщиком?",
@@ -1261,7 +2007,6 @@
         correct: 1,
         feedback: "MTTR (Mean Time To Recovery/Repair) — важный показатель: сколько времени занимает восстановление нормальной работы после инцидента. Чем меньше — тем лучше."
       },
-
       {
         module: "Модуль 6 · Физическая безопасность и удалённая работа",
         q: "На рабочей парковке вы нашли USB-флешку. Ваши действия?",
@@ -1381,7 +2126,7 @@
       }
     }
 
-    function showResult() {
+    async function showResult() {
       document.getElementById('quizProgressBar').style.width = '100%';
       document.getElementById('quizProgressLabel').textContent = 'Тест завершён';
       document.getElementById('quizBody').innerHTML = '';
@@ -1402,7 +2147,6 @@
         const s = moduleScores[m];
         const mp = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
         const cls = mp >= 80 ? 'great' : mp >= 50 ? 'ok' : 'bad';
-        const shortName = m.replace('Модуль ', 'М').split('·')[0].trim();
         return `<div class="breakdown-item">
           <div class="b-module">${m.split('·')[1]?.trim() || m}</div>
           <div class="b-score ${cls}">${s.correct}/${s.total} — ${mp}%</div>
@@ -1410,6 +2154,26 @@
       }).join('');
 
       document.getElementById('quizResult').style.display = 'block';
+
+      // Сохранить результат в Supabase если залогинен
+      if (currentUser) {
+        const breakdown = {};
+        MODULE_NAMES.forEach(m => {
+          const s = moduleScores[m];
+          breakdown[m] = { correct: s.correct, total: s.total };
+        });
+        await supabase.from('quiz_results').insert({
+          user_id:          currentUser.id,
+          score:            score,
+          total:            questions.length,
+          percentage:       pct,
+          module_breakdown: breakdown,
+          completed_at:     new Date().toISOString()
+        });
+        // Обновить bestScore и проверить сертификат
+        await loadBestScore();
+        checkCertificate();
+      }
     }
 
     function restartQuiz() {
@@ -1419,6 +2183,7 @@
       renderQuestion();
     }
 
+    // ─── Fade-in анимация ────────────────────────────────────────
     renderQuestion();
 
     const observer = new IntersectionObserver((entries) => {
@@ -1431,6 +2196,9 @@
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ─── Запуск ──────────────────────────────────────────────────
+    init();
   </script>
 </body>
 </html>
