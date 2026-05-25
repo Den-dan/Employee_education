@@ -334,7 +334,94 @@
         color: var(--danger);
         background: rgba(255, 59, 92, 0.05);
       }
-
+      .btn-nav-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 0.4rem 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--text);
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+      }
+      .btn-nav-profile:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(0, 212, 255, 0.06);
+      }
+      .nav-profile-icon { font-size: 0.85rem; opacity: 0.7; }
+      #profileModal {
+        position: fixed; inset: 0; z-index: 600;
+        background: rgba(2,6,12,0.92);
+        backdrop-filter: blur(16px);
+        display: flex; align-items: center; justify-content: center;
+        padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+      }
+      #profileModal.open { opacity: 1; pointer-events: all; }
+      .pm-card {
+        background: linear-gradient(135deg,rgba(13,26,43,0.99)0%,rgba(17,34,54,0.99)100%);
+        border: 1px solid rgba(0,212,255,0.25); border-radius: 8px;
+        width: 100%; max-width: 520px;
+        box-shadow: 0 0 60px rgba(0,119,255,0.15),0 40px 80px rgba(0,0,0,0.5);
+        overflow: hidden;
+      }
+      .pm-card::before {
+        content: ""; display: block; height: 3px;
+        background: linear-gradient(90deg,transparent,var(--accent2),var(--accent),var(--success),transparent);
+        background-size: 200% 100%; animation: shimmerBar 3s linear infinite;
+      }
+      .pm-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 1.5rem 2rem 1rem; border-bottom: 1px solid var(--border);
+      }
+      .pm-title { font-family:"Rajdhani",sans-serif; font-size:1.3rem; font-weight:700; color:#fff; letter-spacing:1px; }
+      .pm-close { background:none; border:none; color:var(--text-dim); font-size:1.4rem; cursor:pointer; transition:color 0.2s; line-height:1; }
+      .pm-close:hover { color:var(--accent); }
+      .pm-body { padding:1.5rem 2rem 2rem; display:flex; flex-direction:column; gap:1.4rem; }
+      .pm-tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:0.5rem; }
+      .pm-tab {
+        font-family:"Rajdhani",sans-serif; font-weight:600; font-size:0.82rem;
+        letter-spacing:1.5px; text-transform:uppercase; padding:0.6rem 1.2rem;
+        cursor:pointer; border:none; background:transparent; color:var(--text-dim);
+        border-bottom:2px solid transparent; transition:all 0.2s; margin-bottom:-1px;
+      }
+      .pm-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+      .pm-section { display:none; flex-direction:column; gap:1rem; }
+      .pm-section.active { display:flex; }
+      .pm-group { display:flex; flex-direction:column; gap:0.4rem; }
+      .pm-label { font-family:"Rajdhani",sans-serif; font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); }
+      .pm-input, .pm-select {
+        background:rgba(5,11,20,0.8); border:1px solid var(--border); border-radius:3px;
+        padding:0.7rem 1rem; font-family:"IBM Plex Sans",sans-serif; font-size:0.9rem;
+        color:var(--text); outline:none; transition:border-color 0.2s,box-shadow 0.2s; width:100%;
+      }
+      .pm-input:focus,.pm-select:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,212,255,0.08); }
+      .pm-select option { background:var(--surface); }
+      .pm-btn {
+        font-family:"Rajdhani",sans-serif; font-weight:700; font-size:0.85rem;
+        letter-spacing:2px; text-transform:uppercase; padding:0.75rem; border-radius:3px;
+        cursor:pointer; border:none; width:100%;
+        background:linear-gradient(135deg,var(--accent2),var(--accent));
+        color:#000; transition:all 0.2s; box-shadow:0 0 20px rgba(0,212,255,0.2); margin-top:0.3rem;
+      }
+      .pm-btn:hover { box-shadow:0 0 40px rgba(0,212,255,0.4); transform:translateY(-1px); }
+      .pm-msg { border-radius:3px; padding:0.65rem 1rem; font-size:0.85rem; display:none; }
+      .pm-msg.show { display:block; }
+      .pm-msg.ok { background:rgba(0,229,160,0.1); border:1px solid var(--success); color:var(--success); }
+      .pm-msg.err { background:rgba(255,59,92,0.1); border:1px solid var(--danger); color:var(--danger); }
+      .pm-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+      .pm-stat-card { background:var(--bg); border:1px solid var(--border); border-radius:3px; padding:1rem; text-align:center; }
+      .pm-stat-val { font-family:"Rajdhani",sans-serif; font-size:1.6rem; font-weight:700; color:var(--accent); line-height:1; margin-bottom:0.3rem; }
+      .pm-stat-lbl { font-size:0.75rem; color:var(--text-dim); letter-spacing:0.5px; }
+      .pm-history-list { display:flex; flex-direction:column; gap:0.5rem; max-height:180px; overflow-y:auto; }
+      .pm-history-item { display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); border-radius:3px; padding:0.6rem 1rem; font-size:0.82rem; color:var(--text-dim); }
+      .pm-history-score { font-family:"Rajdhani",sans-serif; font-size:1rem; font-weight:700; color:var(--accent); }
       #mandatoryAuthOverlay {
         position: fixed;
         inset: 0;
@@ -1894,6 +1981,86 @@
     </div>
 
     <!-- MANDATORY AUTH OVERLAY -->
+    <!-- PROFILE MODAL -->
+    <div id="profileModal">
+      <div class="pm-card">
+        <div class="pm-header">
+          <div class="pm-title">⚙ Личный кабинет</div>
+          <button class="pm-close" id="profileModalClose">✕</button>
+        </div>
+        <div class="pm-body">
+          <div class="pm-tabs">
+            <button class="pm-tab active" data-tab="info">Профиль</button>
+            <button class="pm-tab" data-tab="password">Пароль</button>
+            <button class="pm-tab" data-tab="stats">Статистика</button>
+          </div>
+          <div class="pm-section active" id="pmSectionInfo">
+            <div class="pm-group">
+              <label class="pm-label">Полное имя</label>
+              <input class="pm-input" type="text" id="pmName" placeholder="Иван Иванов"/>
+            </div>
+            <div class="pm-group">
+              <label class="pm-label">Должность</label>
+              <select class="pm-select" id="pmRole">
+                <option value="employee">Сотрудник</option>
+                <option value="manager">Менеджер</option>
+                <option value="it">IT-специалист</option>
+                <option value="hr">HR</option>
+                <option value="admin">Администратор</option>
+              </select>
+            </div>
+            <div class="pm-group">
+              <label class="pm-label">Отдел</label>
+              <input class="pm-input" type="text" id="pmDept" placeholder="Бухгалтерия"/>
+            </div>
+            <div class="pm-group">
+              <label class="pm-label">Email</label>
+              <input class="pm-input" type="text" id="pmEmail" disabled style="opacity:0.5;cursor:not-allowed"/>
+            </div>
+            <div class="pm-msg" id="pmInfoMsg"></div>
+            <button class="pm-btn" id="pmSaveInfoBtn">Сохранить изменения</button>
+          </div>
+          <div class="pm-section" id="pmSectionPassword">
+            <div class="pm-group">
+              <label class="pm-label">Текущий пароль</label>
+              <input class="pm-input" type="password" id="pmOldPass" placeholder="••••••••"/>
+            </div>
+            <div class="pm-group">
+              <label class="pm-label">Новый пароль</label>
+              <input class="pm-input" type="password" id="pmNewPass" placeholder="Минимум 6 символов"/>
+            </div>
+            <div class="pm-group">
+              <label class="pm-label">Повторите новый пароль</label>
+              <input class="pm-input" type="password" id="pmNewPass2" placeholder="••••••••"/>
+            </div>
+            <div class="pm-msg" id="pmPassMsg"></div>
+            <button class="pm-btn" id="pmSavePassBtn">Изменить пароль</button>
+          </div>
+          <div class="pm-section" id="pmSectionStats">
+            <div class="pm-stat-grid">
+              <div class="pm-stat-card">
+                <div class="pm-stat-val" id="pmStatMods">0/6</div>
+                <div class="pm-stat-lbl">Модулей пройдено</div>
+              </div>
+              <div class="pm-stat-card">
+                <div class="pm-stat-val" id="pmStatBest">—</div>
+                <div class="pm-stat-lbl">Лучший результат</div>
+              </div>
+              <div class="pm-stat-card">
+                <div class="pm-stat-val" id="pmStatAttempts">0</div>
+                <div class="pm-stat-lbl">Попыток теста</div>
+              </div>
+              <div class="pm-stat-card">
+                <div class="pm-stat-val" id="pmStatRole">—</div>
+                <div class="pm-stat-lbl">Должность</div>
+              </div>
+            </div>
+            <div class="pm-label" style="margin-top:0.5rem">История тестов</div>
+            <div class="pm-history-list" id="pmHistoryList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="mandatoryAuthOverlay" class="hidden">
       <div class="mao-card">
         <div class="mao-inner">
@@ -2112,7 +2279,10 @@
         </div>
         <div id="navUser" style="display: none" class="nav-user-info">
           <span class="nav-role-badge" id="navRoleBadge"></span>
-          <span class="nav-user-name" id="navUserName"></span>
+          <button class="btn-nav-profile" id="openProfileBtn">
+            <span class="nav-user-name" id="navUserName"></span>
+            <span class="nav-profile-icon">⚙</span>
+          </button>
           <button class="btn-nav btn-nav-logout" id="logoutBtn">Выйти</button>
         </div>
       </div>
@@ -5346,6 +5516,14 @@
         document
           .getElementById("certPrintBtn")
           .addEventListener("click", printCertificate);
+        document.getElementById("openProfileBtn").addEventListener("click", openProfileModal);
+        document.getElementById("profileModalClose").addEventListener("click", closeProfileModal);
+        document.getElementById("profileModal").addEventListener("click", function(e){ if(e.target===this) closeProfileModal(); });
+        document.querySelectorAll(".pm-tab").forEach(tab => {
+          tab.addEventListener("click", function(){ pmSwitchTab(this.dataset.tab); });
+        });
+        document.getElementById("pmSaveInfoBtn").addEventListener("click", pmSaveInfo);
+        document.getElementById("pmSavePassBtn").addEventListener("click", pmSavePass);
 
         renderNews();
         // Рендерим модули и квиз по умолчанию (для employee)
@@ -6220,6 +6398,126 @@
           new Date().getFullYear();
         document.getElementById("pco-id").textContent = certId;
         window.print();
+      }
+      function openProfileModal() {
+        if (!currentUser || !userProfile) return;
+        const modal = document.getElementById("profileModal");
+        document.getElementById("pmName").value = userProfile.full_name || "";
+        document.getElementById("pmRole").value = userProfile.role || "employee";
+        document.getElementById("pmDept").value = userProfile.department || "";
+        document.getElementById("pmEmail").value = currentUser.email || "";
+        document.getElementById("pmOldPass").value = "";
+        document.getElementById("pmNewPass").value = "";
+        document.getElementById("pmNewPass2").value = "";
+        pmHideMsg("pmInfoMsg");
+        pmHideMsg("pmPassMsg");
+        pmSwitchTab("info");
+        pmFillStats();
+        modal.classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeProfileModal() {
+        document.getElementById("profileModal").classList.remove("open");
+        document.body.style.overflow = "";
+      }
+
+      function pmSwitchTab(tab) {
+        document.querySelectorAll(".pm-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+        document.querySelectorAll(".pm-section").forEach(s => s.classList.remove("active"));
+        const map = { info:"pmSectionInfo", password:"pmSectionPassword", stats:"pmSectionStats" };
+        if (map[tab]) document.getElementById(map[tab]).classList.add("active");
+      }
+
+      function pmShowMsg(id, text, type) {
+        const el = document.getElementById(id);
+        el.textContent = text;
+        el.className = "pm-msg show " + type;
+      }
+
+      function pmHideMsg(id) {
+        const el = document.getElementById(id);
+        el.className = "pm-msg";
+        el.textContent = "";
+      }
+
+      async function pmSaveInfo() {
+        const name = document.getElementById("pmName").value.trim();
+        const role = document.getElementById("pmRole").value;
+        const dept = document.getElementById("pmDept").value.trim();
+        if (!name) { pmShowMsg("pmInfoMsg","Введите имя","err"); return; }
+        const sb = getSupabase();
+        try {
+          const { error } = await sb.from("profiles").update({
+            full_name: name, role: role, department: dept, updated_at: new Date().toISOString()
+          }).eq("id", currentUser.id);
+          if (error) { pmShowMsg("pmInfoMsg","Ошибка: "+error.message,"err"); return; }
+          userProfile.full_name = name;
+          userProfile.role = role;
+          userProfile.department = dept;
+          currentRole = role;
+          if (!MODULES_BY_ROLE[currentRole]) currentRole = "employee";
+          updateNavUI();
+          renderModules();
+          renderQuiz();
+          showRoleInfo();
+          pmShowMsg("pmInfoMsg","✅ Данные сохранены!","ok");
+        } catch(e) {
+          pmShowMsg("pmInfoMsg","Ошибка сохранения","err");
+        }
+      }
+
+      async function pmSavePass() {
+        const oldPass = document.getElementById("pmOldPass").value;
+        const newPass = document.getElementById("pmNewPass").value;
+        const newPass2 = document.getElementById("pmNewPass2").value;
+        if (!oldPass || !newPass || !newPass2) { pmShowMsg("pmPassMsg","Заполните все поля","err"); return; }
+        if (newPass.length < 6) { pmShowMsg("pmPassMsg","Новый пароль минимум 6 символов","err"); return; }
+        if (newPass !== newPass2) { pmShowMsg("pmPassMsg","Новые пароли не совпадают","err"); return; }
+        const sb = getSupabase();
+        try {
+          const { error: signInError } = await sb.auth.signInWithPassword({
+            email: currentUser.email, password: oldPass
+          });
+          if (signInError) { pmShowMsg("pmPassMsg","Текущий пароль неверный","err"); return; }
+          const { error } = await sb.auth.updateUser({ password: newPass });
+          if (error) { pmShowMsg("pmPassMsg","Ошибка: "+error.message,"err"); return; }
+          document.getElementById("pmOldPass").value = "";
+          document.getElementById("pmNewPass").value = "";
+          document.getElementById("pmNewPass2").value = "";
+          pmShowMsg("pmPassMsg","✅ Пароль успешно изменён!","ok");
+        } catch(e) {
+          pmShowMsg("pmPassMsg","Ошибка смены пароля","err");
+        }
+      }
+
+      async function pmFillStats() {
+        document.getElementById("pmStatMods").textContent = completedMods.size + "/6";
+        document.getElementById("pmStatBest").textContent = bestScore ? bestScore.percentage+"%" : "—";
+        document.getElementById("pmStatRole").textContent = ROLE_LABELS[currentRole] || "—";
+        const sb = getSupabase();
+        try {
+          const { data } = await sb.from("quiz_results")
+            .select("score,total,percentage,completed_at")
+            .eq("user_id", currentUser.id)
+            .order("completed_at",{ascending:false});
+          document.getElementById("pmStatAttempts").textContent = data ? data.length : 0;
+          const list = document.getElementById("pmHistoryList");
+          if (!data || data.length === 0) {
+            list.innerHTML = '<div style="color:var(--text-dim);font-size:0.82rem;padding:0.5rem 0">Тест ещё не проходился</div>';
+            return;
+          }
+          list.innerHTML = data.map(r => {
+            const date = new Date(r.completed_at).toLocaleDateString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric"});
+            const cls = r.percentage>=65?"var(--success)":"var(--danger)";
+            return `<div class="pm-history-item">
+              <span>${date}</span>
+              <span class="pm-history-score" style="color:${cls}">${r.score}/${r.total} · ${r.percentage}%</span>
+            </div>`;
+          }).join("");
+        } catch(e) {
+          console.warn("pmFillStats error:", e);
+        }
       }
     </script>
   </body>
