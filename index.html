@@ -5730,21 +5730,23 @@
             hideMandatoryOverlay();
           }
           if (event === "SIGNED_OUT") {
-            currentUser = null;
-            userProfile = null;
-            completedMods = new Set();
-            bestScore = null;
-            previousScore = null;
-            watchedMods = new Set();
-            currentRole = "employee";
-            updateNavUI();
-            renderModules();
-            renderQuiz();
-            updateProgressBar();
-            hideCertificate();
-          }
-        });
+  currentUser = null;
+  userProfile = null;
+  completedMods = new Set();
+  bestScore = null;
+  previousScore = null;
+  watchedMods = new Set();
+  currentRole = "employee";
+  quizQuestions = [];
+  moduleScores = {};
+  updateNavUI();
+  renderModules();
+  renderQuiz();
+  updateProgressBar();
+  hideCertificate();
       }
+    });
+  }
 
       async function afterLogin() {
         await loadProfile();
@@ -5803,24 +5805,25 @@
       }
 
       async function loadProfile() {
-        const sb = getSupabase();
-        try {
-          const { data, error } = await sb
-            .from("profiles")
-            .select("*")
-            .eq("id", currentUser.id)
-            .single();
-          if (error) {
-            console.warn("loadProfile error:", error);
-            userProfile = null;
-          } else {
-            userProfile = data;
-          }
-        } catch (e) {
-          console.warn("loadProfile exception:", e);
-          userProfile = null;
-        }
-      }
+  const sb = getSupabase();
+  try {
+    const { data, error } = await sb
+      .from("profiles")
+      .select("*")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+    
+    if (error) {
+      console.warn("loadProfile error:", error);
+      userProfile = null;
+    } else {
+      userProfile = data; // null если не найден, объект если найден
+    }
+  } catch (e) {
+    console.warn("loadProfile exception:", e);
+    userProfile = null;
+  }
+}
 
       async function loadProgress() {
         const sb = getSupabase();
