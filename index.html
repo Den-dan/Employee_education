@@ -195,11 +195,40 @@
         color: #6b8ba4;
         margin-bottom: 0.2rem;
       }
-      .pco-score-val {
+   .pco-score-val {
         font-family: "Rajdhani", sans-serif;
         font-size: 1.6rem;
         font-weight: 700;
         color: #00a07a;
+      }
+      .pco-level-badge {
+        display: inline-block;
+        font-family: "Rajdhani", sans-serif;
+        font-size: 0.75rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        padding: 0.3rem 1rem;
+        border-radius: 2px;
+        margin-bottom: 1rem;
+        border: 1px solid #ccc;
+        color: #666;
+      }
+      .pco-roles-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+        font-size: 0.8rem;
+      }
+      .pco-roles-table td {
+        padding: 0.35rem 0.75rem;
+        border-bottom: 1px solid #e8f0f5;
+        color: #3a5570;
+        text-align: left;
+      }
+      .pco-roles-table td:last-child {
+        text-align: right;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 700;
       }
       .pco-date {
         font-size: 0.8rem;
@@ -420,8 +449,21 @@
       .pm-stat-val { font-family:"Rajdhani",sans-serif; font-size:1.6rem; font-weight:700; color:var(--accent); line-height:1; margin-bottom:0.3rem; }
       .pm-stat-lbl { font-size:0.75rem; color:var(--text-dim); letter-spacing:0.5px; }
       .pm-history-list { display:flex; flex-direction:column; gap:0.5rem; max-height:180px; overflow-y:auto; }
-      .pm-history-item { display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); border-radius:3px; padding:0.6rem 1rem; font-size:0.82rem; color:var(--text-dim); }
+      .pm-history-item { display:flex; justify-content:space-between; align-items:center; background:var(--bg); border:1px solid var(--border); border-radius:3px; padding:0.6rem 1rem; font-size:0.82rem; color:var(--text-dim); gap:0.5rem; }
       .pm-history-score { font-family:"Rajdhani",sans-serif; font-size:1rem; font-weight:700; color:var(--accent); }
+      .pm-history-role { font-family:"Rajdhani",sans-serif; font-size:0.65rem; letter-spacing:1.5px; text-transform:uppercase; padding:0.15rem 0.5rem; border-radius:2px; background:rgba(0,212,255,0.08); color:var(--accent); border:1px solid rgba(0,212,255,0.2); white-space:nowrap; }
+      .pm-roles-grid { display:flex; flex-direction:column; gap:0.5rem; }
+      .pm-role-stat-row { background:var(--bg); border:1px solid var(--border); border-radius:3px; padding:0.75rem 1rem; }
+      .pm-role-stat-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem; }
+      .pm-role-stat-name { font-family:"Rajdhani",sans-serif; font-size:0.85rem; font-weight:700; color:var(--text); display:flex; align-items:center; gap:0.5rem; }
+      .pm-role-stat-badge { font-family:"Rajdhani",sans-serif; font-size:0.6rem; letter-spacing:1.5px; text-transform:uppercase; padding:0.15rem 0.5rem; border-radius:2px; }
+      .pm-role-stat-badge.passed { background:rgba(0,229,160,0.1); color:var(--success); border:1px solid rgba(0,229,160,0.3); }
+      .pm-role-stat-badge.progress { background:rgba(0,212,255,0.08); color:var(--accent); border:1px solid rgba(0,212,255,0.2); }
+      .pm-role-stat-badge.empty { background:rgba(107,139,164,0.1); color:var(--text-dim); border:1px solid rgba(107,139,164,0.2); }
+      .pm-role-stat-scores { display:flex; gap:1rem; font-size:0.78rem; color:var(--text-dim); }
+      .pm-role-stat-scores span { font-family:"Rajdhani",sans-serif; }
+      .pm-role-track { height:3px; background:var(--border); border-radius:2px; overflow:hidden; margin-top:0.4rem; }
+      .pm-role-fill { height:100%; border-radius:2px; transition:width 0.6s ease; }
       #mandatoryAuthOverlay {
         position: fixed;
         inset: 0;
@@ -861,7 +903,7 @@
         flex: 1;
       }
 
-      .user-progress-bar {
+     .user-progress-bar {
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 4px;
@@ -881,6 +923,7 @@
         margin-bottom: 0.8rem;
         display: flex;
         justify-content: space-between;
+        align-items: center;
       }
       .upb-label span {
         color: var(--accent);
@@ -897,6 +940,71 @@
         background: linear-gradient(90deg, var(--accent2), var(--accent));
         border-radius: 3px;
         transition: width 0.6s ease;
+      }
+      .upb-details-btn {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 0.7rem;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        padding: 0.25rem 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 0.8rem;
+        display: inline-block;
+      }
+      .upb-details-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .upb-details-panel {
+        display: none;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1.2rem;
+        padding-top: 1.2rem;
+        border-top: 1px solid var(--border);
+      }
+      .upb-details-panel.open {
+        display: flex;
+      }
+      .upb-role-row {
+        display: grid;
+        grid-template-columns: 130px 1fr 60px 70px;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .upb-role-name {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 0.78rem;
+        letter-spacing: 1px;
+        color: var(--text);
+      }
+      .upb-role-track {
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .upb-role-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.6s ease;
+      }
+      .upb-role-mods {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        text-align: right;
+      }
+      .upb-role-score {
+        font-family: "Rajdhani", sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-align: right;
       }
 
       .module-complete-btn {
@@ -1928,30 +2036,32 @@
     </style>
   </head>
   <body>
-    <!-- PRINT OVERLAY -->
+   <!-- PRINT OVERLAY -->
     <div id="print-certificate-overlay">
       <div class="pco-inner">
         <div class="pco-corner tl"></div>
         <div class="pco-corner tr"></div>
         <div class="pco-corner bl"></div>
         <div class="pco-corner br"></div>
-        <span class="pco-shield">🛡️</span>
+        <span class="pco-shield" id="pco-icon">🛡️</span>
         <div class="pco-org">ИБАкадемия · Информационная безопасность</div>
         <div class="pco-title">СЕРТИФИКАТ</div>
+        <div class="pco-level-badge" id="pco-level-badge">Серебряный</div>
         <div class="pco-subtitle">О прохождении курса</div>
         <div class="pco-divider"></div>
         <div class="pco-given">Настоящим подтверждается, что</div>
         <div class="pco-name" id="pco-name">—</div>
-        <div class="pco-desc">
+        <div class="pco-desc" id="pco-desc">
           успешно прошёл(ла) обучение и итоговый контроль знаний по курсу
         </div>
-        <div class="pco-course">
+        <div class="pco-course" id="pco-course">
           «Информационная безопасность для сотрудников»
         </div>
-        <div class="pco-desc" style="margin-bottom: 1rem">
+        <div class="pco-desc" style="margin-bottom: 1rem" id="pco-subdesc">
           продемонстрировав уверенное владение основами киберзащиты,<br />методами
           выявления угроз и правилами безопасного поведения в цифровой среде.
         </div>
+        <div id="pco-roles-wrap"></div>
         <div class="pco-score-block">
           <div class="pco-score-label">Результат итогового теста</div>
           <div class="pco-score-val" id="pco-score">—</div>
@@ -2036,11 +2146,11 @@
             <div class="pm-msg" id="pmPassMsg"></div>
             <button class="pm-btn" id="pmSavePassBtn">Изменить пароль</button>
           </div>
-          <div class="pm-section" id="pmSectionStats">
+         <div class="pm-section" id="pmSectionStats">
             <div class="pm-stat-grid">
               <div class="pm-stat-card">
                 <div class="pm-stat-val" id="pmStatMods">0/6</div>
-                <div class="pm-stat-lbl">Модулей пройдено</div>
+                <div class="pm-stat-lbl">Модулей (текущая роль)</div>
               </div>
               <div class="pm-stat-card">
                 <div class="pm-stat-val" id="pmStatBest">—</div>
@@ -2055,7 +2165,9 @@
                 <div class="pm-stat-lbl">Должность</div>
               </div>
             </div>
-            <div class="pm-label" style="margin-top:0.5rem">История тестов</div>
+            <div class="pm-label" style="margin-top:0.5rem">Статистика по должностям</div>
+            <div class="pm-roles-grid" id="pmRolesGrid"></div>
+            <div class="pm-label" style="margin-top:0.75rem">История тестов</div>
             <div class="pm-history-list" id="pmHistoryList"></div>
           </div>
         </div>
@@ -2444,11 +2556,14 @@
       </div>
       <div class="user-progress-bar" id="userProgressBar">
         <div class="upb-label">
-          Прогресс обучения<span id="progressCount">0 / 6 модулей</span>
+          Прогресс обучения — <span id="progressRoleLabel">Сотрудник</span>
+          <span id="progressCount">0 / 6 модулей</span>
         </div>
         <div class="upb-track">
           <div class="upb-fill" id="progressFill" style="width: 0%"></div>
         </div>
+        <button class="upb-details-btn" id="upbDetailsBtn" onclick="toggleProgressDetails()">▼ Подробнее по всем должностям</button>
+        <div class="upb-details-panel" id="upbDetailsPanel"></div>
       </div>
       <div class="modules-list" id="modulesList"></div>
     </section>
@@ -5513,9 +5628,8 @@
         document
           .getElementById("restartQuizBtn")
           .addEventListener("click", restartQuiz);
-        document
-          .getElementById("certPrintBtn")
-          .addEventListener("click", printCertificate);
+        // certPrintBtn создаётся динамически в renderCertificate через onclick,
+        // поэтому слушатель здесь не нужен — он уже встроен в кнопку
         document.getElementById("openProfileBtn").addEventListener("click", openProfileModal);
         document.getElementById("profileModalClose").addEventListener("click", closeProfileModal);
         document.getElementById("profileModal").addEventListener("click", function(e){ if(e.target===this) closeProfileModal(); });
@@ -5729,22 +5843,25 @@
             await afterLogin();
             hideMandatoryOverlay();
           }
-          if (event === "SIGNED_OUT") {
-  currentUser = null;
-  userProfile = null;
-  completedMods = new Set();
-  bestScore = null;
-  previousScore = null;
-  watchedMods = new Set();
-  currentRole = "employee";
-  quizQuestions = [];
-  moduleScores = {};
-  updateNavUI();
-  renderModules();
-  renderQuiz();
-  updateProgressBar();
-  hideCertificate();
-      }
+        if (event === "SIGNED_OUT") {
+            currentUser = null;
+            userProfile = null;
+            completedMods = new Set();
+            bestScore = null;
+            previousScore = null;
+            watchedMods = new Set();
+            currentRole = "employee";
+            quizQuestions = [];
+            moduleScores = {};
+            updateNavUI();
+            renderModules();
+            renderQuiz();
+            updateProgressBar();
+            hideCertificate();
+            closeProfileModal();
+            // Закрываем видео если открыто
+            closeVideoModal();
+          }
     });
   }
 
@@ -5825,13 +5942,14 @@
   }
 }
 
-      async function loadProgress() {
+     async function loadProgress() {
         const sb = getSupabase();
         try {
           const { data } = await sb
             .from("module_progress")
             .select("module_number")
             .eq("user_id", currentUser.id)
+            .eq("role", currentRole)
             .eq("completed", true);
           completedMods = new Set((data || []).map((r) => r.module_number));
         } catch (e) {
@@ -5839,13 +5957,14 @@
         }
       }
 
-      async function loadScoreHistory() {
+     async function loadScoreHistory() {
         const sb = getSupabase();
         try {
           const { data } = await sb
             .from("quiz_results")
-            .select("score, total, percentage, completed_at")
+            .select("score, total, percentage, completed_at, role")
             .eq("user_id", currentUser.id)
+            .eq("role", currentRole)
             .order("completed_at", { ascending: false });
           if (!data || data.length === 0) {
             bestScore = null;
@@ -6020,10 +6139,11 @@
             {
               user_id: currentUser.id,
               module_number: num,
+              role: currentRole,
               completed: true,
               completed_at: new Date().toISOString(),
             },
-            { onConflict: "user_id,module_number" }
+            { onConflict: "user_id,module_number,role" }
           );
           if (!error) {
             completedMods.add(num);
@@ -6161,8 +6281,9 @@
             breakdown[m] = moduleScores[m];
           });
           try {
-            await sb.from("quiz_results").insert({
+         await sb.from("quiz_results").insert({
               user_id: currentUser.id,
+              role: currentRole,
               score: quizScore,
               total: quizQuestions.length,
               percentage: pct,
@@ -6296,75 +6417,260 @@
         }
       }
 
-      function updateProgressBar() {
+    function updateProgressBar() {
         const bar = document.getElementById("userProgressBar");
         if (!currentUser) {
           bar.classList.remove("visible");
+          // Сбрасываем панель деталей
+          const panel = document.getElementById("upbDetailsPanel");
+          const btn = document.getElementById("upbDetailsBtn");
+          if (panel) panel.classList.remove("open");
+          if (btn) btn.textContent = "▼ Подробнее по всем должностям";
           return;
         }
         bar.classList.add("visible");
         const n = completedMods.size;
-        document.getElementById(
-          "progressCount"
-        ).textContent = `${n} / 6 модулей`;
-        document.getElementById("progressFill").style.width =
-          Math.round((n / 6) * 100) + "%";
+        document.getElementById("progressCount").textContent = `${n} / 6 модулей`;
+        document.getElementById("progressFill").style.width = Math.round((n / 6) * 100) + "%";
+        const roleLabel = document.getElementById("progressRoleLabel");
+        if (roleLabel) roleLabel.textContent = ROLE_LABELS[currentRole] || "Сотрудник";
+        // Сбрасываем панель деталей при каждом обновлении (смена роли)
+        const panel = document.getElementById("upbDetailsPanel");
+        const btn = document.getElementById("upbDetailsBtn");
+        if (panel && panel.classList.contains("open")) {
+          panel.classList.remove("open");
+          if (btn) btn.textContent = "▼ Подробнее по всем должностям";
+        }
       }
 
-      function checkCertificate() {
+      function toggleProgressDetails() {
+        const panel = document.getElementById("upbDetailsPanel");
+        const btn = document.getElementById("upbDetailsBtn");
+        const isOpen = panel.classList.contains("open");
+        if (isOpen) {
+          panel.classList.remove("open");
+          btn.textContent = "▼ Подробнее по всем должностям";
+        } else {
+          panel.classList.add("open");
+          btn.textContent = "▲ Скрыть детали";
+          renderProgressDetails();
+        }
+      }
+
+      async function renderProgressDetails() {
+        const panel = document.getElementById("upbDetailsPanel");
+        panel.innerHTML = `<div style="color:var(--text-dim);font-size:0.8rem">Загрузка...</div>`;
+        const allRolesData = await loadAllRolesData();
+        const roles = ["employee", "manager", "it", "hr", "admin"];
+        const PASS_THRESHOLD = 65;
+
+        panel.innerHTML = roles.map((role) => {
+          const d = allRolesData[role];
+          const mods = d ? d.modulesCompleted : 0;
+          const score = d ? d.bestScore : null;
+          const modPct = Math.round((mods / 6) * 100);
+          const passed = mods >= 6 && score !== null && score >= PASS_THRESHOLD;
+          const isCurrent = role === currentRole;
+
+          let fillColor = "var(--text-dim)";
+          if (passed) fillColor = "var(--success)";
+          else if (mods > 0) fillColor = "var(--accent)";
+
+          let scoreText = "—";
+          let scoreColor = "var(--text-dim)";
+          if (score !== null) {
+            scoreText = score + "%";
+            scoreColor = score >= PASS_THRESHOLD ? "var(--success)" : "var(--danger)";
+          }
+
+          return `<div class="upb-role-row" style="${isCurrent ? "background:rgba(0,212,255,0.04);border-radius:3px;padding:0.2rem 0.4rem;margin:-0.2rem -0.4rem;" : ""}">
+            <div class="upb-role-name">${isCurrent ? "→ " : ""}${ROLE_LABELS[role]}</div>
+            <div class="upb-role-track"><div class="upb-role-fill" style="width:${modPct}%;background:${fillColor}"></div></div>
+            <div class="upb-role-mods">${mods}/6 мод.</div>
+            <div class="upb-role-score" style="color:${scoreColor}">${scoreText}</div>
+          </div>`;
+        }).join("");
+      }
+
+      async function checkCertificate() {
         const section = document.getElementById("certificate-section");
         const navLink = document.getElementById("navCertLink");
         if (!currentUser || !userProfile) {
           hideCertificate();
           return;
         }
-        const allDone = completedMods.size >= 6;
-        const passed = bestScore && bestScore.percentage >= 65;
-        if (allDone && passed) {
-          section.classList.add("visible");
-          navLink.style.display = "list-item";
-          document.getElementById("certName").textContent =
-            userProfile.full_name || currentUser.email;
-          document.getElementById(
-            "certScore"
-          ).textContent = `Результат теста: ${bestScore.score} / ${bestScore.total} (${bestScore.percentage}%)`;
-          const dateStr = new Date(bestScore.completed_at).toLocaleDateString(
-            "ru-RU",
-            { year: "numeric", month: "long", day: "numeric" }
-          );
-          document.getElementById(
-            "certDate"
-          ).textContent = `Дата выдачи: ${dateStr}`;
-          saveCertificate();
-        } else {
-          hideCertificate();
-        }
-      }
 
+        const allRolesData = await loadAllRolesData();
+        const level = calculateCertLevel(allRolesData);
+
+        if (!level) {
+          hideCertificate();
+          return;
+        }
+
+        section.classList.add("visible");
+        navLink.style.display = "list-item";
+
+        const roles = ["employee", "manager", "it", "hr", "admin"];
+        const rolesCompleted = roles.filter((r) => {
+          const d = allRolesData[r];
+          return d && d.modulesCompleted >= 6 && d.bestScore !== null && d.bestScore >= 65;
+        });
+
+        renderCertificate(level, allRolesData, rolesCompleted);
+        await saveCertificate(level, allRolesData, rolesCompleted);
+      }
       function hideCertificate() {
-        document
-          .getElementById("certificate-section")
-          .classList.remove("visible");
+        document.getElementById("certificate-section").classList.remove("visible");
         document.getElementById("navCertLink").style.display = "none";
       }
+      function renderCertificate(level, allRolesData, rolesCompleted) {
+        const ROLE_LABELS_SHORT = {
+          employee: "Сотрудник", manager: "Менеджер",
+          it: "IT-специалист", hr: "HR", admin: "Администратор",
+        };
+        const LEVEL_CONFIG = {
+          silver:   { icon: "🥈", label: "Серебряный сертификат", color: "#C0C0C0", glow: "rgba(192,192,192,0.3)" },
+          gold:     { icon: "🥇", label: "Золотой сертификат",    color: "#FFD700", glow: "rgba(255,215,0,0.3)"   },
+          platinum: { icon: "💎", label: "Платиновый сертификат", color: "#E5E4E2", glow: "rgba(229,228,226,0.3)" },
+          crystal:  { icon: "🔮", label: "Кристальный сертификат",color: "#00d4ff", glow: "rgba(0,212,255,0.4)"   },
+        };
+        const cfg = LEVEL_CONFIG[level];
+        const name = userProfile.full_name || currentUser.email;
+        const roles = ["employee", "manager", "it", "hr", "admin"];
 
-      async function saveCertificate() {
-        if (!currentUser || !bestScore) return;
+        // Строим строки по ролям для platinum/crystal
+        const rolesRows = roles.map((r) => {
+          const d = allRolesData[r];
+          const passed = d && d.modulesCompleted >= 6 && d.bestScore !== null && d.bestScore >= 65;
+          const scoreText = d && d.bestScore !== null ? d.bestScore + "%" : "—";
+          const modsText = d ? d.modulesCompleted + "/6" : "0/6";
+          const statusIcon = passed ? "✅" : (d && (d.modulesCompleted > 0 || d.bestScore !== null) ? "🔄" : "⬜");
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.82rem;">
+            <span>${statusIcon} ${ROLE_LABELS_SHORT[r]}</span>
+            <span style="color:var(--text-dim)">модули: ${modsText} · тест: ${scoreText}</span>
+          </div>`;
+        }).join("");
+
+        // Описание по уровню
+        const descriptions = {
+          silver:   `успешно прошёл(ла) обучение по должности <strong style="color:var(--text)">${ROLE_LABELS_SHORT[currentRole]}</strong> и подтвердил(а) знания в области информационной безопасности.`,
+          gold:     `прошёл(ла) обучение по <strong style="color:var(--text)">${rolesCompleted.length} должностям</strong> из 5 и продемонстрировал(а) расширенные знания информационной безопасности.`,
+          platinum: `прошёл(ла) полный курс обучения по <strong style="color:var(--text)">всем 5 должностям</strong> и получил(а) платиновый статус специалиста по информационной безопасности.`,
+          crystal:  `достиг(ла) <strong style="color:var(--text)">абсолютного результата</strong> — все 5 должностей пройдены на 100%. Высший уровень мастерства в информационной безопасности.`,
+        };
+
+        const showRolesTable = level === "platinum" || level === "crystal" || level === "gold";
+        const dateStr = new Date().toLocaleDateString("ru-RU", { year: "numeric", month: "long", day: "numeric" });
+
+        document.querySelector(".certificate-box").innerHTML = `
+          <span class="cert-icon" style="filter:drop-shadow(0 0 16px ${cfg.glow})">${cfg.icon}</span>
+          <div class="cert-title" style="color:${cfg.color}">${cfg.label}</div>
+          <div class="cert-name">${name}</div>
+          <div class="cert-desc">${descriptions[level]}</div>
+          ${showRolesTable ? `<div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:0.75rem 1rem;margin-bottom:1.5rem;text-align:left">${rolesRows}</div>` : ""}
+          ${bestScore ? `<div class="cert-score" style="color:${cfg.color}">Лучший результат (${ROLE_LABELS_SHORT[currentRole]}): ${bestScore.score}/${bestScore.total} (${bestScore.percentage}%)</div>` : ""}
+          <div class="cert-date">Дата выдачи: ${dateStr}</div>
+          <button class="cert-print-btn" id="certPrintBtn" onclick="printCertificate()" style="border-color:${cfg.color};color:${cfg.color}">🖨 Распечатать сертификат</button>
+        `;
+      }
+
+   async function saveCertificate(level, allRolesData, rolesCompleted) {
+        if (!currentUser) return;
         const sb = getSupabase();
+        const roles = ["employee", "manager", "it", "hr", "admin"];
+        const rolesScores = {};
+        const rolesModules = {};
+        roles.forEach((r) => {
+          rolesScores[r] = allRolesData[r] ? allRolesData[r].bestScore : null;
+          rolesModules[r] = allRolesData[r] ? allRolesData[r].modulesCompleted : 0;
+        });
+        const allHundred = level === "crystal";
         try {
-          await sb
-            .from("certificates")
-            .upsert(
-              {
-                user_id: currentUser.id,
-                score: bestScore.score,
-                issued_at: bestScore.completed_at,
-              },
-              { onConflict: "user_id" }
-            );
+          await sb.from("certificates").upsert(
+            {
+              user_id: currentUser.id,
+              level: level,
+              roles_completed: rolesCompleted,
+              roles_scores: rolesScores,
+              roles_modules: rolesModules,
+              all_hundred: allHundred,
+              issued_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" }
+          );
         } catch (e) {
           console.warn("saveCertificate error:", e);
         }
+      }
+
+      // ============================================================
+      //  ALL ROLES DATA + CERT LEVEL
+      // ============================================================
+      async function loadAllRolesData() {
+        if (!currentUser) return {};
+        const sb = getSupabase();
+        const roles = ["employee", "manager", "it", "hr", "admin"];
+        const result = {};
+
+        try {
+          const { data: modData } = await sb
+            .from("module_progress")
+            .select("module_number, role")
+            .eq("user_id", currentUser.id)
+            .eq("completed", true);
+
+          const { data: quizData } = await sb
+            .from("quiz_results")
+            .select("score, total, percentage, role, completed_at")
+            .eq("user_id", currentUser.id)
+            .order("completed_at", { ascending: false });
+
+          roles.forEach((role) => {
+            const roleMods = (modData || []).filter((r) => r.role === role);
+            const roleQuizzes = (quizData || []).filter((r) => r.role === role);
+            const bestQuiz = roleQuizzes.reduce(
+              (best, r) => (!best || r.percentage > best.percentage ? r : best),
+              null
+            );
+            result[role] = {
+              modulesCompleted: roleMods.length,
+              bestScore: bestQuiz ? bestQuiz.percentage : null,
+              bestQuiz: bestQuiz || null,
+            };
+          });
+        } catch (e) {
+          console.warn("loadAllRolesData error:", e);
+          roles.forEach((role) => {
+            result[role] = { modulesCompleted: 0, bestScore: null, bestQuiz: null };
+          });
+        }
+
+        return result;
+      }
+
+      function calculateCertLevel(allRolesData) {
+        const roles = ["employee", "manager", "it", "hr", "admin"];
+        const PASS_THRESHOLD = 65;
+
+        const isRolePassed = (role) => {
+          const d = allRolesData[role];
+          return d && d.modulesCompleted >= 6 && d.bestScore !== null && d.bestScore >= PASS_THRESHOLD;
+        };
+
+        const passedRoles = roles.filter(isRolePassed);
+        const passedCount = passedRoles.length;
+
+        const allHundred =
+          passedCount === 5 &&
+          roles.every((r) => allRolesData[r] && allRolesData[r].bestScore === 100);
+
+        if (allHundred) return "crystal";
+        if (passedCount === 5) return "platinum";
+        if (passedCount >= 2) return "gold";
+        if (passedCount >= 1) return "silver";
+        return null;
       }
 
       async function doLogout() {
@@ -6383,23 +6689,82 @@
       // ============================================================
       //  PRINT CERTIFICATE
       // ============================================================
-      function printCertificate() {
-        const name = document.getElementById("certName").textContent;
-        const score = document.getElementById("certScore").textContent;
-        const date = document.getElementById("certDate").textContent;
+    async function printCertificate() {
+        const ROLE_LABELS_SHORT = {
+          employee: "Сотрудник", manager: "Менеджер",
+          it: "IT-специалист", hr: "HR", admin: "Администратор",
+        };
+        const LEVEL_CONFIG = {
+          silver:   { icon: "🥈", label: "Серебряный", course: `«Информационная безопасность — ${ROLE_LABELS_SHORT[currentRole]}»` },
+          gold:     { icon: "🥇", label: "Золотой",    course: "«Информационная безопасность — Расширенный курс»" },
+          platinum: { icon: "💎", label: "Платиновый", course: "«Информационная безопасность — Полный курс»" },
+          crystal:  { icon: "🔮", label: "Кристальный",course: "«Информационная безопасность — Мастер всех должностей»" },
+        };
+
+        const allRolesData = await loadAllRolesData();
+        const level = calculateCertLevel(allRolesData) || "silver";
+        const cfg = LEVEL_CONFIG[level];
+        const roles = ["employee", "manager", "it", "hr", "admin"];
+
+        const name = userProfile ? userProfile.full_name || currentUser.email : "—";
+        const dateStr = new Date().toLocaleDateString("ru-RU", { year: "numeric", month: "long", day: "numeric" });
+        const certId = (currentUser ? currentUser.id.slice(0, 8).toUpperCase() : "--------") + "-" + new Date().getFullYear();
+
+        document.getElementById("pco-icon").textContent = cfg.icon;
+        document.getElementById("pco-level-badge").textContent = cfg.label;
         document.getElementById("pco-name").textContent = name;
-        document.getElementById("pco-score").textContent = score.replace(
-          "Результат теста: ",
-          ""
-        );
-        document.getElementById("pco-date").textContent = date;
-        const certId =
-          (currentUser
-            ? currentUser.id.slice(0, 8).toUpperCase()
-            : "--------") +
-          "-" +
-          new Date().getFullYear();
+        document.getElementById("pco-course").textContent = cfg.course;
+        document.getElementById("pco-date").textContent = "Дата выдачи: " + dateStr;
         document.getElementById("pco-id").textContent = certId;
+
+        // Описание по уровню
+        const rolesCompleted = roles.filter((r) => {
+          const d = allRolesData[r];
+          return d && d.modulesCompleted >= 6 && d.bestScore !== null && d.bestScore >= 65;
+        });
+        const descMap = {
+          silver:   "успешно прошёл(ла) обучение и итоговый контроль знаний по курсу",
+          gold:     `успешно прошёл(ла) обучение по ${rolesCompleted.length} должностям из 5 и подтвердил(а) расширенные знания`,
+          platinum: "успешно прошёл(ла) полный курс обучения по всем 5 должностям",
+          crystal:  "достиг(ла) абсолютного результата — все 5 должностей пройдены на 100%",
+        };
+        document.getElementById("pco-desc").textContent = descMap[level];
+
+        const subDescMap = {
+          silver:   "продемонстрировав уверенное владение основами киберзащиты, методами выявления угроз и правилами безопасного поведения в цифровой среде.",
+          gold:     "продемонстрировав глубокие знания информационной безопасности в нескольких профессиональных контекстах.",
+          platinum: "продемонстрировав экспертное владение всеми аспектами корпоративной информационной безопасности.",
+          crystal:  "продемонстрировав мастерское владение всеми аспектами информационной безопасности с результатом 100% по каждой должности.",
+        };
+        document.getElementById("pco-subdesc").textContent = subDescMap[level];
+
+        // Таблица ролей для gold/platinum/crystal
+        const rolesWrap = document.getElementById("pco-roles-wrap");
+        if (level === "gold" || level === "platinum" || level === "crystal") {
+          const rows = roles.map((r) => {
+            const d = allRolesData[r];
+            const mods = d ? d.modulesCompleted : 0;
+            const score = d && d.bestScore !== null ? d.bestScore + "%" : "—";
+            const passed = d && d.modulesCompleted >= 6 && d.bestScore !== null && d.bestScore >= 65;
+            return `<tr>
+              <td>${passed ? "✓" : "·"} ${ROLE_LABELS_SHORT[r]}</td>
+              <td>модули: ${mods}/6</td>
+              <td>${score}</td>
+            </tr>`;
+          }).join("");
+          rolesWrap.innerHTML = `<table class="pco-roles-table"><tbody>${rows}</tbody></table>`;
+        } else {
+          rolesWrap.innerHTML = "";
+        }
+
+        // Результат теста
+        if (bestScore) {
+          document.getElementById("pco-score").textContent =
+            `${bestScore.score} / ${bestScore.total} (${bestScore.percentage}%)`;
+        } else {
+          document.getElementById("pco-score").textContent = "—";
+        }
+
         window.print();
       }
       function openProfileModal() {
@@ -6460,9 +6825,13 @@
           userProfile.department = dept;
           currentRole = role;
           if (!MODULES_BY_ROLE[currentRole]) currentRole = "employee";
-          updateNavUI();
+         updateNavUI();
+          await loadProgress();
+          await loadScoreHistory();
           renderModules();
           renderQuiz();
+          updateProgressBar();
+          await checkCertificate();
           showRoleInfo();
           pmShowMsg("pmInfoMsg","✅ Данные сохранены!","ok");
         } catch(e) {
@@ -6494,31 +6863,86 @@
         }
       }
 
-      async function pmFillStats() {
+     async function pmFillStats() {
         document.getElementById("pmStatMods").textContent = completedMods.size + "/6";
-        document.getElementById("pmStatBest").textContent = bestScore ? bestScore.percentage+"%" : "—";
+        document.getElementById("pmStatBest").textContent = bestScore ? bestScore.percentage + "%" : "—";
         document.getElementById("pmStatRole").textContent = ROLE_LABELS[currentRole] || "—";
+
         const sb = getSupabase();
         try {
+          // История тестов — все роли
           const { data } = await sb.from("quiz_results")
-            .select("score,total,percentage,completed_at")
+            .select("score,total,percentage,completed_at,role")
             .eq("user_id", currentUser.id)
-            .order("completed_at",{ascending:false});
+            .order("completed_at", { ascending: false });
+
           document.getElementById("pmStatAttempts").textContent = data ? data.length : 0;
+
+          // Статистика по должностям
+          const allRolesData = await loadAllRolesData();
+          const roles = ["employee", "manager", "it", "hr", "admin"];
+          const rolesGrid = document.getElementById("pmRolesGrid");
+
+          rolesGrid.innerHTML = roles.map((role) => {
+            const d = allRolesData[role];
+            const mods = d ? d.modulesCompleted : 0;
+            const score = d ? d.bestScore : null;
+            const isCurrent = role === currentRole;
+            const passed = mods >= 6 && score !== null && score >= 65;
+            const hasAny = mods > 0 || score !== null;
+            const modPct = Math.round((mods / 6) * 100);
+
+            let badgeClass = "empty";
+            let badgeText = "Не проходили";
+            if (passed) { badgeClass = "passed"; badgeText = "✓ Пройдено"; }
+            else if (hasAny) { badgeClass = "progress"; badgeText = "В процессе"; }
+
+            let fillColor = "var(--text-dim)";
+            if (passed) fillColor = "var(--success)";
+            else if (hasAny) fillColor = "var(--accent)";
+
+            let scoreText = "Тест: —";
+            let scoreColor = "var(--text-dim)";
+            if (score !== null) {
+              scoreText = "Тест: " + score + "%";
+              scoreColor = score >= 65 ? "var(--success)" : "var(--danger)";
+            }
+
+            return `<div class="pm-role-stat-row" style="${isCurrent ? "border-color:rgba(0,212,255,0.35);" : ""}">
+              <div class="pm-role-stat-header">
+                <div class="pm-role-stat-name">
+                  ${isCurrent ? "→ " : ""}${ROLE_LABELS[role]}
+                </div>
+                <span class="pm-role-stat-badge ${badgeClass}">${badgeText}</span>
+              </div>
+              <div class="pm-role-stat-scores">
+                <span>Модули: ${mods}/6</span>
+                <span style="color:${scoreColor}">${scoreText}</span>
+              </div>
+              <div class="pm-role-track">
+                <div class="pm-role-fill" style="width:${modPct}%;background:${fillColor}"></div>
+              </div>
+            </div>`;
+          }).join("");
+
+          // История тестов с ролью
           const list = document.getElementById("pmHistoryList");
           if (!data || data.length === 0) {
             list.innerHTML = '<div style="color:var(--text-dim);font-size:0.82rem;padding:0.5rem 0">Тест ещё не проходился</div>';
             return;
           }
-          list.innerHTML = data.map(r => {
-            const date = new Date(r.completed_at).toLocaleDateString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric"});
-            const cls = r.percentage>=65?"var(--success)":"var(--danger)";
+          list.innerHTML = data.map((r) => {
+            const date = new Date(r.completed_at).toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric" });
+            const cls = r.percentage >= 65 ? "var(--success)" : "var(--danger)";
+            const roleLabel = ROLE_LABELS[r.role] || r.role || "—";
             return `<div class="pm-history-item">
               <span>${date}</span>
+              <span class="pm-history-role">${roleLabel}</span>
               <span class="pm-history-score" style="color:${cls}">${r.score}/${r.total} · ${r.percentage}%</span>
             </div>`;
           }).join("");
-        } catch(e) {
+
+        } catch (e) {
           console.warn("pmFillStats error:", e);
         }
       }
