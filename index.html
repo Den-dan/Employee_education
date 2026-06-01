@@ -2173,7 +2173,7 @@
         </div>
       </div>
     </div>
-    <div id="mandatoryAuthOverlay" class="hidden">
+    <div id="mandatoryAuthOverlay" class="hidden" style="opacity:0;pointer-events:none;">
       <div class="mao-card">
         <div class="mao-inner">
           <div class="mao-logo">
@@ -6384,6 +6384,7 @@
         document.getElementById("quizNext").textContent = "Следующий →";
         document.getElementById("quizPerfectBanner").classList.remove("show");
         document.getElementById("quizHistoryPanel").classList.remove("show");
+        document.getElementById("quizResult").style.display = "none";
         renderQuestion();
       }
 
@@ -6823,9 +6824,10 @@
           userProfile.full_name = name;
           userProfile.role = role;
           userProfile.department = dept;
-          currentRole = role;
+         currentRole = role;
           if (!MODULES_BY_ROLE[currentRole]) currentRole = "employee";
-         updateNavUI();
+          watchedMods = new Set(); // сбрасываем просмотренные модули для новой роли
+          updateNavUI();
           await loadProgress();
           await loadScoreHistory();
           renderModules();
