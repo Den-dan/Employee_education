@@ -971,11 +971,37 @@
       .upb-details-panel.open {
         display: flex;
       }
+     /* ЗАМЕНИ НА: */
       .upb-role-row {
         display: grid;
         grid-template-columns: 130px 1fr 60px 70px;
         align-items: center;
         gap: 0.75rem;
+      }
+      @media (max-width: 600px) {
+        .upb-role-row {
+          grid-template-columns: 1fr 50px;
+          grid-template-rows: auto auto;
+          gap: 0.4rem 0.5rem;
+        }
+        .upb-role-row .upb-role-name {
+          grid-column: 1;
+          grid-row: 1;
+        }
+        .upb-role-row .upb-role-score {
+          grid-column: 2;
+          grid-row: 1;
+          text-align: right;
+        }
+        .upb-role-row .upb-role-track {
+          grid-column: 1;
+          grid-row: 2;
+        }
+        .upb-role-row .upb-role-mods {
+          grid-column: 2;
+          grid-row: 2;
+          text-align: right;
+        }
       }
       .upb-role-name {
         font-family: "Rajdhani", sans-serif;
@@ -5890,12 +5916,12 @@
           currentRole,
           "| Профиль:",
           userProfile
-        );
+        );   
         updateNavUI();
         renderModules();
         renderQuiz();
         updateProgressBar();
-        checkCertificate();
+        await checkCertificate();
         showRoleInfo();
       }
 
@@ -5957,7 +5983,8 @@
         }
       }
 
-     async function loadScoreHistory() {
+     // ЗАМЕНИ НА:
+      async function loadScoreHistory() {
         const sb = getSupabase();
         try {
           const { data } = await sb
@@ -5975,6 +6002,10 @@
             (best, r) => (!best || r.percentage > best.percentage ? r : best),
             null
           );
+          // previousScore — последняя попытка перед текущей (data[0] = самая свежая,
+          // data[1] = предыдущая по хронологии). После showResult() новая попытка
+          // сохранена и loadScoreHistory перезагружается, поэтому data[1] корректно
+          // указывает на попытку "до текущей".
           previousScore = data.length >= 2 ? data[1] : null;
         } catch (e) {
           console.warn("loadScoreHistory error:", e);
@@ -6048,17 +6079,18 @@
         list.innerHTML = mods
           .map((mod) => {
             const isDone = completedMods.has(mod.num);
+            // ЗАМЕНИ НА:
             const btnDisplay = currentUser ? "inline-flex" : "none";
             const btnClass = isDone
               ? "module-complete-btn done"
               : "module-complete-btn";
             const btnLabel = isDone ? "✅ Пройден" : "Отметить пройденным";
+            // Кнопка разблокирована если: модуль завершён ИЛИ просмотрен в этой сессии
+            const btnDisabled = isDone || watchedMods.has(mod.num) ? "" : "disabled";
             return `
         <div class="module-row fade-in" data-module="${
           mod.num
-        }" onclick="handleModuleClick(event, ${mod.num}, '${
-              mod.videoId
-            }', '${esc(mod.title)}', '${esc(mod.desc)}')">
+        }" onclick="handleModuleClick(event, ${mod.num}, '${mod.videoId}', '${esc(mod.title)}', '${esc(mod.desc)}')">
           <div class="module-num">0${mod.num}</div>
           <div class="module-info">
             <h3>${mod.title}</h3>
@@ -6076,9 +6108,7 @@
             </button>
             <button class="${btnClass}" id="mbtn-${mod.num}" data-num="${
               mod.num
-            }" style="display:${btnDisplay}" ${
-              isDone ? "" : "disabled"
-            } onclick="handleCompleteBtn(event, ${
+            }" style="display:${btnDisplay}" ${btnDisabled} onclick="handleCompleteBtn(event, ${
               mod.num
             })">${btnLabel}</button>
           </div>
@@ -6293,7 +6323,7 @@
             await loadScoreHistory();
             savedPrev = previousScore;
             savedBest = bestScore;
-            checkCertificate();
+            await checkCertificate();
           } catch (e) {
             console.warn("quiz save error:", e);
           }
@@ -6501,11 +6531,13 @@
           return;
         }
 
+        // Скрываем до получения данных — избегаем мерцания в навбаре
+        hideCertificate();
+
         const allRolesData = await loadAllRolesData();
         const level = calculateCertLevel(allRolesData);
 
         if (!level) {
-          hideCertificate();
           return;
         }
 
@@ -6821,13 +6853,15 @@
             full_name: name, role: role, department: dept, updated_at: new Date().toISOString()
           }).eq("id", currentUser.id);
           if (error) { pmShowMsg("pmInfoMsg","Ошибка: "+error.message,"err"); return; }
+         // ЗАМЕНИ НА:
           userProfile.full_name = name;
           userProfile.role = role;
           userProfile.department = dept;
-         currentRole = role;
+          currentRole = role;
           if (!MODULES_BY_ROLE[currentRole]) currentRole = "employee";
           watchedMods = new Set(); // сбрасываем просмотренные модули для новой роли
           updateNavUI();
+          // await перед обоими запросами — renderModules/renderQuiz получат свежие данные
           await loadProgress();
           await loadScoreHistory();
           renderModules();
