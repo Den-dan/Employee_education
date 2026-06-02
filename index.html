@@ -465,21 +465,22 @@
       .pm-role-track { height:3px; background:var(--border); border-radius:2px; overflow:hidden; margin-top:0.4rem; }
       .pm-role-fill { height:100%; border-radius:2px; transition:width 0.6s ease; }
       #mandatoryAuthOverlay {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-        background: rgba(2, 6, 12, 0.97);
-        backdrop-filter: blur(20px) saturate(0.5);
-        opacity: 1;
-        transition: opacity 0.5s ease;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(2, 6, 12, 0.97);
+      backdrop-filter: blur(20px) saturate(0.5);
+      opacity: 1;
+      pointer-events: all;
+      transition: opacity 0.5s ease;
       }
       #mandatoryAuthOverlay.hidden {
-        opacity: 0;
-        pointer-events: none;
+      opacity: 0;
+      pointer-events: none;
       }
 
       #mandatoryAuthOverlay::before {
@@ -2199,7 +2200,7 @@
         </div>
       </div>
     </div>
-    <div id="mandatoryAuthOverlay" class="hidden" style="opacity:0;pointer-events:none;">
+    <div id="mandatoryAuthOverlay" class="hidden">
       <div class="mao-card">
         <div class="mao-inner">
           <div class="mao-logo">
