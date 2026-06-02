@@ -23,6 +23,360 @@
         --glow: 0 0 30px rgba(0, 212, 255, 0.2);
       }
 
+      body.light {
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --surface2: #e8eef5;
+  --accent: #0044aa;
+  --accent2: #003388;
+  --danger: #cc1133;
+  --success: #007a50;
+  --text: #0d1a2b;
+  --text-dim: #3a5570;
+  --border: rgba(0, 60, 160, 0.3);
+  --glow: 0 0 30px rgba(0, 60, 160, 0.15);
+}
+
+body.light::before {
+  background-image:
+    linear-gradient(rgba(0, 60, 160, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 60, 160, 0.07) 1px, transparent 1px);
+}
+
+body.light nav {
+  background: rgba(240, 244, 248, 0.95);
+  border-bottom: 2.5px solid rgba(0, 60, 160, 0.25);
+}
+
+body.light h1,
+body.light h2,
+body.light h3,
+body.light .mao-headline,
+body.light .pm-title,
+body.light .video-modal-title,
+body.light .news-title,
+body.light .quiz-question,
+body.light .cert-name,
+body.light .module-info h3,
+body.light .threat-card h3,
+body.light .tip-card h3 {
+  color: #0d1a2b;
+}
+
+body.light .hero-orb {
+  background: radial-gradient(circle, rgba(0, 60, 160, 0.1) 0%, transparent 70%);
+}
+
+/* Карточки и контейнеры — толстые границы */
+body.light .quiz-wrapper {
+  border: 2.5px solid rgba(0, 60, 160, 0.25);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+body.light .threat-card {
+  border: 2px solid rgba(0, 60, 160, 0.2);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+body.light .threat-card:hover {
+  border-color: rgba(0, 60, 160, 0.45);
+  box-shadow: 0 4px 20px rgba(0, 60, 160, 0.12);
+}
+
+body.light .module-row {
+  border: 2px solid rgba(0, 60, 160, 0.2);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+body.light .module-row:hover {
+  border-color: rgba(0, 60, 160, 0.45);
+  box-shadow: 0 4px 24px rgba(0, 60, 160, 0.12);
+}
+
+body.light .news-card {
+  border: 2px solid rgba(0, 60, 160, 0.18);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+body.light .news-card:hover {
+  border-color: rgba(200, 0, 40, 0.4);
+  box-shadow: 0 4px 24px rgba(200, 0, 40, 0.1);
+}
+
+body.light .tip-card {
+  border: 2px solid rgba(0, 60, 160, 0.18);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+body.light .certificate-box {
+  border: 2.5px solid rgba(0, 60, 160, 0.3);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+body.light .user-progress-bar {
+  border: 2px solid rgba(0, 60, 160, 0.22);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+body.light .role-info-banner {
+  border: 2px solid rgba(0, 60, 160, 0.25);
+  background: rgba(0, 60, 160, 0.05);
+}
+
+body.light .video-modal-inner {
+  border: 2.5px solid rgba(0, 60, 160, 0.25);
+}
+
+/* Кнопки — толще рамки */
+body.light .btn-nav {
+  border: 2.5px solid var(--accent);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+body.light .btn-nav-logout {
+  border: 2.5px solid var(--text-dim);
+  color: var(--text-dim);
+}
+
+body.light .btn-nav-logout:hover {
+  border: 2.5px solid var(--danger);
+  color: var(--danger);
+}
+
+body.light .btn-nav-profile {
+  border: 2.5px solid rgba(0, 60, 160, 0.3);
+  color: var(--text);
+}
+
+body.light .btn-nav-profile:hover {
+  border: 2.5px solid var(--accent);
+  color: var(--accent);
+}
+
+body.light .btn {
+  border-width: 2.5px;
+  font-weight: 700;
+}
+
+body.light .btn-outline {
+  border: 2.5px solid var(--accent);
+  color: var(--accent);
+}
+
+body.light .module-play {
+  color: var(--text-dim);
+}
+
+body.light .module-complete-btn {
+  border: 2px solid var(--text-dim);
+  color: var(--text-dim);
+}
+
+body.light .module-complete-btn:hover:not(:disabled):not(.done) {
+  border: 2.5px solid var(--success);
+  color: var(--success);
+}
+
+body.light .module-complete-btn.done {
+  border: 2.5px solid var(--success);
+  color: var(--success);
+}
+
+body.light .upb-details-btn {
+  border: 2px solid rgba(0, 60, 160, 0.25);
+  color: var(--text-dim);
+}
+
+body.light .upb-details-btn:hover {
+  border: 2.5px solid var(--accent);
+  color: var(--accent);
+}
+
+body.light .cert-print-btn {
+  border: 2.5px solid var(--accent);
+  color: var(--accent);
+}
+
+/* Инпуты */
+body.light .quiz-option {
+  background: #f4f8ff;
+  border: 2px solid rgba(0, 60, 160, 0.2);
+  color: #0d1a2b;
+}
+
+body.light .quiz-option:hover:not(:disabled) {
+  border: 2.5px solid var(--accent);
+  background: #eaf0ff;
+  color: #0d1a2b;
+}
+
+body.light .pm-input,
+body.light .pm-select,
+body.light .mao-input,
+body.light .mao-select {
+  background: #f4f8ff;
+  border: 2px solid rgba(0, 60, 160, 0.25);
+  color: #0d1a2b;
+}
+
+body.light .pm-input:focus,
+body.light .pm-select:focus,
+body.light .mao-input:focus,
+body.light .mao-select:focus {
+  border: 2.5px solid var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 60, 160, 0.1);
+}
+
+body.light .mao-select option,
+body.light .pm-select option {
+  background: #ffffff;
+  color: #0d1a2b;
+}
+
+/* Модальные окна */
+body.light .pm-card,
+body.light .mao-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f4f8fd 100%);
+  border: 2.5px solid rgba(0, 60, 160, 0.22);
+}
+
+body.light .pm-tab.active,
+body.light .mao-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+body.light .pm-tabs,
+body.light .mao-tabs {
+  border-bottom: 2px solid rgba(0, 60, 160, 0.2);
+}
+
+body.light #mandatoryAuthOverlay {
+  background: rgba(210, 225, 240, 0.97);
+}
+
+/* Карточки статистики */
+body.light .qhp-card,
+body.light .breakdown-item,
+body.light .pm-stat-card,
+body.light .pm-history-item,
+body.light .pm-role-stat-row {
+  background: #f0f4f8;
+  border: 2px solid rgba(0, 60, 160, 0.18);
+}
+
+body.light .pm-role-track,
+body.light .upb-track,
+body.light .upb-role-track,
+body.light .quiz-progress-bar-wrap {
+  background: rgba(0, 60, 160, 0.12);
+}
+
+/* Текст который был белым */
+body.light .stat-num {
+  color: var(--accent);
+}
+
+body.light .module-num {
+  color: rgba(0, 60, 160, 0.25);
+}
+
+body.light .module-tag {
+  background: rgba(0, 60, 160, 0.08);
+  border: 1.5px solid rgba(0, 60, 160, 0.2);
+  color: var(--accent);
+}
+
+body.light .hero-badge {
+  color: var(--accent);
+  border: 1.5px solid rgba(0, 60, 160, 0.25);
+  background: rgba(0, 60, 160, 0.05);
+}
+
+body.light .section-label {
+  color: var(--accent);
+}
+
+body.light .nav-logo {
+  color: var(--accent);
+}
+
+body.light .nav-logo span {
+  color: var(--text);
+}
+
+body.light .nav-links a {
+  color: var(--text-dim);
+}
+
+body.light .nav-links a:hover {
+  color: var(--accent);
+}
+
+body.light .nav-role-badge {
+  background: rgba(0, 60, 160, 0.08);
+  color: var(--accent);
+  border: 1.5px solid rgba(0, 60, 160, 0.2);
+}
+
+body.light .footer-logo {
+  color: var(--accent);
+}
+
+body.light footer {
+  background: #e8eef5;
+  border-top: 2px solid rgba(0, 60, 160, 0.15);
+}
+
+body.light .stat {
+  background: #f0f4f8;
+}
+
+body.light .section-divider {
+  background: rgba(0, 60, 160, 0.15);
+}
+
+body.light .mao-logo-title {
+  color: var(--accent);
+}
+
+body.light .quiz-module-tag {
+  color: var(--accent);
+}
+
+body.light .quiz-progress-label {
+  color: var(--text-dim);
+}
+
+body.light .module-duration {
+  color: var(--accent);
+}
+
+body.light .news-date {
+  color: var(--text-dim);
+}
+
+body.light .pco-inner {
+  border: 3px double #003388;
+}
+
+body.light .pco-org,
+body.light .pco-footer-logo {
+  color: #003388;
+}
+
+body.light .theme-toggle-btn {
+  border: 2.5px solid var(--accent);
+  color: var(--accent);
+  background: rgba(0, 60, 160, 0.05);
+}
+
+body.light .theme-toggle-btn:hover {
+  background: rgba(0, 60, 160, 0.12);
+  box-shadow: 0 0 16px rgba(0, 60, 160, 0.15);
+}
+
       * {
         margin: 0;
         padding: 0;
@@ -2060,6 +2414,43 @@
           padding: 1.5rem;
         }
       }
+
+      /* THEME TOGGLE BUTTON */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0.45rem 0.9rem;
+  border-radius: 20px;
+  cursor: pointer;
+  border: 2px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+.theme-toggle-btn:hover {
+  background: rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 16px rgba(0, 212, 255, 0.2);
+}
+body.light .theme-toggle-btn {
+  border: 2.5px solid var(--accent);
+  color: var(--accent);
+  background: rgba(0, 100, 200, 0.05);
+}
+body.light .theme-toggle-btn:hover {
+  background: rgba(0, 100, 200, 0.12);
+  box-shadow: 0 0 16px rgba(0, 100, 200, 0.15);
+}
+.theme-toggle-btn .tt-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
     </style>
   </head>
   <body>
@@ -2412,7 +2803,11 @@
           <a href="#certificate-section">🏆 Сертификат</a>
         </li>
       </ul>
-      <div class="nav-auth-area">
+      <div class="nav-auth-area" style="gap:0.75rem">
+          <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">
+    <span class="tt-icon" id="themeIcon">✦</span>
+    <span id="themeLabel">Светлая</span>
+  </button>
         <div id="navGuest">
           <button class="btn-nav" id="openModalBtn">Войти / Регистрация</button>
         </div>
@@ -5588,10 +5983,30 @@
       let moduleScores = {};
       let currentRole = "employee";
 
+      // THEME
+function toggleTheme() {
+  const isLight = document.body.classList.toggle("light");
+  document.getElementById("themeIcon").textContent = isLight ? "☽" : "✦";
+  document.getElementById("themeLabel").textContent = isLight ? "Тёмная" : "Светлая";
+  localStorage.setItem("ib-theme", isLight ? "light" : "dark");
+}
+
+(function initTheme() {
+  const saved = localStorage.getItem("ib-theme");
+  if (saved === "light") {
+    document.body.classList.add("light");
+    // Иконка и лейбл обновятся после DOMContentLoaded
+  }
+})();
+
       // ============================================================
       //  DOM READY
       // ============================================================
       document.addEventListener("DOMContentLoaded", function () {
+        if (document.body.classList.contains("light")) {
+  document.getElementById("themeIcon").textContent = "🌙";
+  document.getElementById("themeLabel").textContent = "Тёмная";
+}
         document
           .querySelectorAll(".fade-in")
           .forEach((el) => el.classList.add("js-animate"));
