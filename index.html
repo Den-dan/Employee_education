@@ -6563,6 +6563,12 @@
           employee: "Сотрудник", manager: "Менеджер",
           it: "IT-специалист", hr: "HR", admin: "Администратор",
         };
+
+       // Реально пройденная роль — не зависит от currentRole
+        const earnedRole = (rolesCompleted && rolesCompleted.length > 0)
+          ? rolesCompleted[0]
+          : currentRole;
+
         const LEVEL_CONFIG = {
           silver:   { icon: "🥈", label: "Серебряный сертификат", color: "#C0C0C0", glow: "rgba(192,192,192,0.3)" },
           gold:     { icon: "🥇", label: "Золотой сертификат",    color: "#FFD700", glow: "rgba(255,215,0,0.3)"   },
@@ -6572,6 +6578,8 @@
         const cfg = LEVEL_CONFIG[level];
         const name = userProfile.full_name || currentUser.email;
         const roles = ["employee", "manager", "it", "hr", "admin"];
+
+        // Строим строки по ролям для platinum/crystal
 
         // Строим строки по ролям для platinum/crystal
         const rolesRows = roles.map((r) => {
@@ -6588,7 +6596,7 @@
 
         // Описание по уровню
         const descriptions = {
-          silver:   `успешно прошёл(ла) обучение по должности <strong style="color:var(--text)">${ROLE_LABELS_SHORT[currentRole]}</strong> и подтвердил(а) знания в области информационной безопасности.`,
+          silver:   `успешно прошёл(ла) обучение по должности <strong style="color:var(--text)">${ROLE_LABELS_SHORT[earnedRole]}</strong> и подтвердил(а) знания в области информационной безопасности.`,
           gold:     `прошёл(ла) обучение по <strong style="color:var(--text)">${rolesCompleted.length} должностям</strong> из 5 и продемонстрировал(а) расширенные знания информационной безопасности.`,
           platinum: `прошёл(ла) полный курс обучения по <strong style="color:var(--text)">всем 5 должностям</strong> и получил(а) платиновый статус специалиста по информационной безопасности.`,
           crystal:  `достиг(ла) <strong style="color:var(--text)">абсолютного результата</strong> — все 5 должностей пройдены на 100%. Высший уровень мастерства в информационной безопасности.`,
@@ -6603,7 +6611,16 @@
           <div class="cert-name">${name}</div>
           <div class="cert-desc">${descriptions[level]}</div>
           ${showRolesTable ? `<div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:0.75rem 1rem;margin-bottom:1.5rem;text-align:left">${rolesRows}</div>` : ""}
-          ${bestScore ? `<div class="cert-score" style="color:${cfg.color}">Лучший результат (${ROLE_LABELS_SHORT[currentRole]}): ${bestScore.score}/${bestScore.total} (${bestScore.percentage}%)</div>` : ""}
+         ${(() => {
+            const earnedData = allRolesData[earnedRole];
+            const earnedBest = earnedData && earnedData.bestQuiz ? earnedData.bestQuiz : null;
+            if (level === "silver" && earnedBest) {
+              return `<div class="cert-score" style="color:${cfg.color}">Лучший результат (${ROLE_LABELS_SHORT[earnedRole]}): ${earnedBest.score}/${earnedBest.total} (${earnedBest.percentage}%)</div>`;
+            } else if (level !== "silver" && bestScore) {
+              return `<div class="cert-score" style="color:${cfg.color}">Лучший результат (${ROLE_LABELS_SHORT[currentRole]}): ${bestScore.score}/${bestScore.total} (${bestScore.percentage}%)</div>`;
+            }
+            return "";
+          })()}
           <div class="cert-date">Дата выдачи: ${dateStr}</div>
           <button class="cert-print-btn" id="certPrintBtn" onclick="printCertificate()" style="border-color:${cfg.color};color:${cfg.color}">🖨 Распечатать сертификат</button>
         `;
@@ -6728,8 +6745,9 @@
           employee: "Сотрудник", manager: "Менеджер",
           it: "IT-специалист", hr: "HR", admin: "Администратор",
         };
-        const LEVEL_CONFIG = {
-          silver:   { icon: "🥈", label: "Серебряный", course: `«Информационная безопасность — ${ROLE_LABELS_SHORT[currentRole]}»` },
+      
+      const LEVEL_CONFIG = {
+          silver:   { icon: "🥈", label: "Серебряный", course: `«Информационная безопасность»` },
           gold:     { icon: "🥇", label: "Золотой",    course: "«Информационная безопасность — Расширенный курс»" },
           platinum: { icon: "💎", label: "Платиновый", course: "«Информационная безопасность — Полный курс»" },
           crystal:  { icon: "🔮", label: "Кристальный",course: "«Информационная безопасность — Мастер всех должностей»" },
@@ -6752,10 +6770,21 @@
         document.getElementById("pco-id").textContent = certId;
 
         // Описание по уровню
-        const rolesCompleted = roles.filter((r) => {
+     const rolesCompleted = roles.filter((r) => {
           const d = allRolesData[r];
           return d && d.modulesCompleted >= 6 && d.bestScore !== null && d.bestScore >= 65;
         });
+
+        // Для silver берём реально пройденную роль, а не currentRole
+        const earnedRole = (rolesCompleted && rolesCompleted.length > 0)
+          ? rolesCompleted[0]
+          : currentRole;
+
+        // Обновляем курс для silver с правильной ролью
+        if (level === "silver") {
+          cfg.course = `«Информационная безопасность — ${ROLE_LABELS_SHORT[earnedRole]}»`;
+        }
+
         const descMap = {
           silver:   "успешно прошёл(ла) обучение и итоговый контроль знаний по курсу",
           gold:     `успешно прошёл(ла) обучение по ${rolesCompleted.length} должностям из 5 и подтвердил(а) расширенные знания`,
