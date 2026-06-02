@@ -1600,6 +1600,61 @@ body.light .theme-toggle-btn:hover {
         margin: 0 auto 2.5rem;
         line-height: 1.8;
       }
+
+      .hero-instruction {
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.25rem 1.75rem;
+  text-align: left;
+}
+
+body.light-theme .hero-instruction {
+  background: rgba(0, 119, 255, 0.05);
+}
+
+.hero-instruction-title {
+  font-family: "Rajdhani", sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.hero-instruction-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hero-instruction-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.hero-instruction-step .step-num {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--accent);
+  background: rgba(0, 212, 255, 0.1);
+  border-radius: 2px;
+  padding: 0.1rem 0.45rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+body.light-theme .hero-instruction-step .step-num {
+  background: rgba(0, 119, 255, 0.1);
+}
+
       .btn-group {
         display: flex;
         gap: 1rem;
@@ -2866,9 +2921,26 @@ body.light .theme-toggle-btn:hover {
           вопросам информационной безопасности. От базовых угроз до сложных
           сценариев атак.
         </p>
+        <div class="hero-instruction">
+          <div class="hero-instruction-title" data-i18n="hero.guide.title">// Как пользоваться платформой</div>
+          <div class="hero-instruction-steps">
+            <div class="hero-instruction-step">
+              <span class="step-num">01</span>
+              <span data-i18n="hero.guide.s1">Зарегистрируйтесь и выберите свою должность — программа обучения адаптируется автоматически.</span>
+            </div>
+            <div class="hero-instruction-step">
+              <span class="step-num">02</span>
+              <span data-i18n="hero.guide.s2">Просмотрите 6 видеомодулей и отметьте каждый как пройденный.</span>
+            </div>
+            <div class="hero-instruction-step">
+              <span class="step-num">03</span>
+              <span data-i18n="hero.guide.s3">Пройдите итоговый тест из 40 вопросов и получите персональный сертификат.</span>
+            </div>
+          </div>
+        </div>
         <div class="btn-group">
-          <a class="btn btn-primary" href="#modules">Начать обучение</a>
-          <a class="btn btn-outline" href="#quiz">Пройти тест</a>
+          <a class="btn btn-primary" href="#modules" data-i18n="hero.start">Начать обучение</a>
+          <a class="btn btn-outline" href="#quiz" data-i18n="hero.quiz">Пройти тест</a>
         </div>
       </div>
     </div>
