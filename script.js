@@ -3612,8 +3612,6 @@ function updateNavUI() {
     user.style.display = "flex";
     document.getElementById("navUserName").textContent =
       userProfile.full_name || currentUser.email;
-    document.getElementById("navRoleBadge").textContent =
-      ROLE_LABELS[userProfile.role] || userProfile.role || "Сотрудник";
   } else {
     guest.style.display = "block";
     user.style.display = "none";
