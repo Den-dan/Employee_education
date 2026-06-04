@@ -3014,8 +3014,12 @@ async function doMaoRegister() {
     password,
     options: { data: { full_name: name, role: role } },
   });
-  if (error) {
-    errEl.textContent = error.message;
+if (error) {
+    if (error.message.includes("already registered") || error.message.includes("User already registered")) {
+      errEl.textContent = "Этот email уже зарегистрирован. Попробуйте войти.";
+    } else {
+      errEl.textContent = error.message;
+    }
     errEl.classList.add("show");
     return;
   }
@@ -3419,14 +3423,19 @@ function renderQuestion() {
   document.getElementById("quizNav").style.display = "none";
   document.getElementById("quizResult").style.display = "none";
 
+  // Перемешиваем варианты ответов
+  const shuffled = q.options
+    .map((o, i) => ({ text: o, originalIdx: i }))
+    .sort(() => Math.random() - 0.5);
+
   const body = document.getElementById("quizBody");
   body.innerHTML =
     `<div class="quiz-module-tag">${q.module}</div>` +
     `<div class="quiz-question">${q.q}</div>` +
     `<div class="quiz-options" id="quizOptions">` +
-    q.options
+    shuffled
       .map(
-        (o, i) => `<button class="quiz-option" data-idx="${i}">${o}</button>`,
+        (o) => `<button class="quiz-option" data-idx="${o.originalIdx}">${o.text}</button>`,
       )
       .join("") +
     `</div>` +
@@ -3452,8 +3461,13 @@ function selectOption(idx) {
   moduleScores[q.module].total++;
   const btns = document.querySelectorAll(".quiz-option");
   btns.forEach((b) => (b.disabled = true));
-  btns[idx].classList.add(idx === q.correct ? "correct" : "wrong");
-  btns[q.correct].classList.add("correct");
+  if (idx === q.correct) {
+    btns[idx].classList.add("correct");
+  } else {
+    btns.forEach((b) => {
+      if (parseInt(b.dataset.idx) === q.correct) b.classList.add("wrong");
+    });
+  }
   if (idx === q.correct) {
     quizScore++;
     moduleScores[q.module].correct++;
@@ -3727,7 +3741,7 @@ async function checkCertificate() {
   const rolesCompleted = roles.filter((r) => {
     const d = allRolesData[r];
     return (
-      d && d.modulesCompleted >= 6 && d.bestScore !== null && d.bestScore >= 65
+      d && d.bestScore !== null && d.bestScore >= 65
     );
   });
 
@@ -3826,7 +3840,7 @@ function renderCertificate(level, allRolesData, rolesCompleted) {
 
   document.querySelector(".certificate-box").innerHTML = `
           <span class="cert-icon" style="filter:drop-shadow(0 0 16px ${cfg.glow})">${cfg.icon}</span>
-          <div class="cert-title" style="color:${cfg.color}">${cfg.label}</div>
+          <div class="cert-title" style="color:var(--accent)">${cfg.label}</div>
           <div class="cert-name">${name}</div>
           <div class="cert-desc">${descriptions[level]}</div>
           ${showRolesTable ? `<div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:0.75rem 1rem;margin-bottom:1.5rem;text-align:left">${rolesRows}</div>` : ""}
@@ -3837,12 +3851,12 @@ function renderCertificate(level, allRolesData, rolesCompleted) {
            if (level === "silver" && earnedBest) {
              return `<div class="cert-score" style="color:${cfg.color}">Лучший результат (${ROLE_LABELS_SHORT[earnedRole]}): ${earnedBest.score}/${earnedBest.total} (${earnedBest.percentage}%)</div>`;
            } else if (level !== "silver" && bestScore) {
-             return `<div class="cert-score" style="color:${cfg.color}">Лучший результат (${ROLE_LABELS_SHORT[currentRole]}): ${bestScore.score}/${bestScore.total} (${bestScore.percentage}%)</div>`;
+             return `<div class="cert-score" style="color:var(--success)">Лучший результат (${ROLE_LABELS_SHORT[currentRole]}): ${bestScore.score}/${bestScore.total} (${bestScore.percentage}%)</div>`;
            }
            return "";
          })()}
           <div class="cert-date">Дата выдачи: ${dateStr}</div>
-          <button class="cert-print-btn" id="certPrintBtn" onclick="printCertificate()" style="border-color:${cfg.color};color:${cfg.color}">🖨 Распечатать сертификат</button>
+          <button class="cert-print-btn" id="certPrintBtn" onclick="printCertificate()" style="border-color:${cfg.color};color:var(--accent)">🖨 Распечатать сертификат</button>
         `;
 }
 
@@ -3925,11 +3939,10 @@ function calculateCertLevel(allRolesData) {
   const roles = ["employee", "manager", "it", "hr", "admin"];
   const PASS_THRESHOLD = 65;
 
-  const isRolePassed = (role) => {
+const isRolePassed = (role) => {
     const d = allRolesData[role];
     return (
       d &&
-      d.modulesCompleted >= 6 &&
       d.bestScore !== null &&
       d.bestScore >= PASS_THRESHOLD
     );
@@ -4061,35 +4074,41 @@ async function printCertificate() {
 
   // Таблица ролей для gold/platinum/crystal
   const rolesWrap = document.getElementById("pco-roles-wrap");
-  if (level === "gold" || level === "platinum" || level === "crystal") {
-    const rows = roles
+if (level === "gold" || level === "platinum" || level === "crystal") {
+    // Показываем только пройденные роли (все модули + тест >= 65%)
+    const passedRolesRows = roles
+      .filter((r) => {
+        const d = allRolesData[r];
+        return d && d.bestScore !== null && d.bestScore >= 65;
+      })
       .map((r) => {
         const d = allRolesData[r];
-        const mods = d ? d.modulesCompleted : 0;
-        const score = d && d.bestScore !== null ? d.bestScore + "%" : "—";
-        const passed =
-          d &&
-          d.modulesCompleted >= 6 &&
-          d.bestScore !== null &&
-          d.bestScore >= 65;
+        const quiz = d.bestQuiz;
         return `<tr>
-              <td>${passed ? "✓" : "·"} ${ROLE_LABELS_SHORT[r]}</td>
-              <td>модули: ${mods}/6</td>
-              <td>${score}</td>
+              <td>✓ ${ROLE_LABELS_SHORT[r]}</td>
+              <td>модули: 6/6</td>
+              <td style="color:#00a07a;font-weight:700">${quiz ? quiz.score + "/" + quiz.total + " (" + quiz.percentage + "%)" : d.bestScore + "%"}</td>
             </tr>`;
       })
       .join("");
-    rolesWrap.innerHTML = `<table class="pco-roles-table"><tbody>${rows}</tbody></table>`;
+    rolesWrap.innerHTML = `<table class="pco-roles-table"><tbody>${passedRolesRows}</tbody></table>`;
   } else {
     rolesWrap.innerHTML = "";
   }
 
-  // Результат теста
-  if (bestScore) {
-    document.getElementById("pco-score").textContent =
-      `${bestScore.score} / ${bestScore.total} (${bestScore.percentage}%)`;
+// Результат теста — только для silver (1 роль)
+  const scoreBlock = document.querySelector(".pco-score-block");
+  if (level === "silver") {
+    if (scoreBlock) scoreBlock.style.display = "inline-block";
+    if (bestScore) {
+      document.getElementById("pco-score").textContent =
+        `${bestScore.score} / ${bestScore.total} (${bestScore.percentage}%)`;
+    } else {
+      document.getElementById("pco-score").textContent = "—";
+    }
   } else {
-    document.getElementById("pco-score").textContent = "—";
+    // Для gold/platinum/crystal скрываем общий блок результата
+    if (scoreBlock) scoreBlock.style.display = "none";
   }
 
   window.print();
