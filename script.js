@@ -3265,13 +3265,14 @@ function renderModules() {
   list.innerHTML = mods
     .map((mod) => {
       const isDone = completedMods.has(mod.num);
-      const isWatched = watchedMods.has(mod.num);
+      // ЗАМЕНИ НА:
+      const btnDisplay = currentUser ? "inline-flex" : "none";
       const btnClass = isDone
         ? "module-complete-btn done"
         : "module-complete-btn";
       const btnLabel = isDone ? "✅ Пройден" : "Отметить пройденным";
-      const btnDisabled = isDone || isWatched ? "" : "disabled";
-      const btnDisplay = currentUser ? "block" : "none";
+      // Кнопка разблокирована если: модуль завершён ИЛИ просмотрен в этой сессии
+      const btnDisabled = isDone || watchedMods.has(mod.num) ? "" : "disabled";
       return `
         <div class="module-row fade-in" data-module="${
           mod.num
