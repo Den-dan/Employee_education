@@ -3743,6 +3743,90 @@ function updateShieldTheme(isLight) {
 //  DOM READY
 // ============================================================
 document.addEventListener("DOMContentLoaded", function () {
+  // Звёзды в лоадере
+(function initLoaderStars() {
+  const canvas = document.getElementById('plCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const stars = Array.from({length: 130}, () => ({
+    x: Math.random(), y: Math.random(),
+    r: Math.random() * 1.4 + .3,
+    ph: Math.random() * Math.PI * 2,
+    sp: Math.random() * .009 + .003,
+  }));
+
+  const meteors = [];
+  const delays = [900, 2400, 4200];
+  delays.forEach(d => setTimeout(() => {
+    meteors.push({
+      x: Math.random() * window.innerWidth * 1.2,
+      y: -30,
+      len: Math.random() * 130 + 90,
+      spd: Math.random() * 6 + 5,
+      life: 1,
+      angle: Math.PI / 4 + (Math.random() - .5) * .3,
+    });
+  }, d));
+
+  function draw() {
+    const loader = document.getElementById('pageLoader');
+    if (!loader || loader.classList.contains('hidden')) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      s.ph += s.sp;
+      const a = .2 + .5 * Math.sin(s.ph);
+      ctx.beginPath();
+      ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(180,220,255,${a})`;
+      ctx.fill();
+    });
+    for (let i = meteors.length - 1; i >= 0; i--) {
+      const m = meteors[i];
+      const dx = Math.cos(m.angle) * m.len;
+      const dy = Math.sin(m.angle) * m.len;
+      const g = ctx.createLinearGradient(m.x, m.y, m.x - dx, m.y - dy);
+      g.addColorStop(0, `rgba(255,255,255,${m.life * .9})`);
+      g.addColorStop(.3, `rgba(0,212,255,${m.life * .5})`);
+      g.addColorStop(1, 'rgba(0,55,160,0)');
+      ctx.beginPath();
+      ctx.moveTo(m.x, m.y);
+      ctx.lineTo(m.x - dx, m.y - dy);
+      ctx.strokeStyle = g;
+      ctx.lineWidth = 1.5;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${m.life})`;
+      ctx.fill();
+      m.x += Math.cos(m.angle) * m.spd;
+      m.y += Math.sin(m.angle) * m.spd;
+      m.life -= .018;
+      if (m.life <= 0) meteors.splice(i, 1);
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+(function initLoaderStatus() {
+  const labels = [
+    'Загрузка модулей...',
+    'Синхронизация данных...',
+    'Инициализация квиза...',
+    'Проверка доступа...',
+    'Загрузка профиля...',
+    'Почти готово...',
+  ];
+  let i = 0;
+  const el = document.getElementById('plStatus');
+  if (!el) return;
+  setInterval(() => { i = (i + 1) % labels.length; el.textContent = labels[i]; }, 900);
+})();
   if (document.body.classList.contains("light")) {
     document.getElementById("themeIcon").textContent = "🌙";
     document.getElementById("themeLabel").textContent = "Тёмная";
@@ -4285,9 +4369,13 @@ async function afterLogin() {
   // Создаём новую сессию для администратора при каждом входе
   // Применить локальный предпросмотр если он есть
   if (currentUser && currentUser.email === "admin@ibacademy.ru") {
-    currentSessionId = null;
-    localStorage.removeItem("adminSessionId");
-    getSessionId();
+    if (_adminLoggedInThisPageLoad) {
+      // Повторный вход (не перезагрузка) — новая сессия
+      currentSessionId = null;
+      localStorage.removeItem("adminSessionId");
+    }
+    _adminLoggedInThisPageLoad = true;
+    getSessionId(); // восстановит из localStorage или создаст новую
     if (hasAdminPreview()) {
       applyAdminPreviewToUI();
       updateAdminPreviewBanner();
@@ -5988,19 +6076,30 @@ async function saveAdminModule(role, i, btnEl) {
   }
 
   const sb = getSupabase();
+  const modPayload = {
+  role,
+  num: mod._dbNum || mod.num,
+  title,
+  description: desc,
+  video_id: videoId,
+  duration,
+  tags: mod.tags,
+  sort_order: i,
+  updated_at: new Date().toISOString(),
+};
+  if (mod._dbId) modPayload.id = mod._dbId;
+
   const { error } = await sb.from("modules_content").upsert(
-    {
-      role,
-      num: mod.num,
-      title,
-      description: desc,
-      video_id: videoId,
-      duration,
-      tags: mod.tags,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "role,num" },
+    modPayload,
+    { onConflict: mod._dbId ? "id" : "role,num" },
   );
+
+  if (!error && mod._dbId === undefined) {
+    // запоминаем id новой записи чтобы следующий save шёл по id
+    const { data: inserted } = await sb.from("modules_content")
+      .select("id").eq("role", role).eq("num", mod._dbNum || mod.num).single();
+    if (inserted) MODULES_BY_ROLE[role][i]._dbId = inserted.id;
+  }
 
   if (btn) {
     btn.disabled = false;
@@ -6023,15 +6122,17 @@ async function saveAdminModule(role, i, btnEl) {
 }
 
 async function deleteAdminModule(role, i) {
-  if (
-    !confirm(
-      `Удалить модуль "${MODULES_BY_ROLE[role][i].title}"? Это действие нельзя отменить через историю.`,
-    )
-  )
-    return;
   const mod = MODULES_BY_ROLE[role][i];
+  if (!confirm(`Удалить модуль "${mod.title}"?`)) return;
   const sb = getSupabase();
-  await sb.from("modules_content").delete().eq("role", role).eq("num", mod.num);
+
+  // Записываем в историю ДО удаления
+  await recordChange('delete_module', `${role}:${mod.num}`, {
+    title: mod.title, desc: mod.desc, videoId: mod.videoId,
+    duration: mod.duration, tags: mod.tags, num: mod.num, role
+  }, null);
+
+  await sb.from('modules_content').delete().eq('role', role).eq('num', mod._dbNum || mod.num);
   MODULES_BY_ROLE[role].splice(i, 1);
   MODULES_BY_ROLE[role].forEach((m, idx) => (m.num = idx + 1));
   if (role === currentRole) renderModules();
@@ -6042,22 +6143,30 @@ async function addAdminModule(role) {
   const newNum = MODULES_BY_ROLE[role].length + 1;
   const newMod = {
     num: newNum,
-    title: "Новый модуль",
-    desc: "Описание модуля",
-    tags: ["Базовый", "Лекция"],
-    duration: "0:00",
-    videoId: "",
+    title: 'Новый модуль',
+    desc: 'Описание модуля',
+    tags: ['Базовый', 'Лекция'],
+    duration: '0:00',
+    videoId: '',
   };
   MODULES_BY_ROLE[role].push(newMod);
+  const sb2 = getSupabase();
+const { data: ins } = await sb2.from("modules_content").insert({
+  role, num: newNum, title: newMod.title, description: newMod.desc,
+  video_id: newMod.videoId, duration: newMod.duration, tags: newMod.tags,
+  sort_order: newNum - 1, updated_at: new Date().toISOString(),
+}).select("id").single();
+if (ins) newMod._dbId = ins.id;
+
+  await recordChange('create_module', `${role}:${newNum}`, null, {
+    title: newMod.title, desc: newMod.desc, videoId: newMod.videoId,
+    duration: newMod.duration, tags: newMod.tags, num: newNum, role
+  });
+
   renderAdminModuleCards();
-  // Скроллим к новой карточке
   setTimeout(() => {
-    const cards = document.querySelectorAll("#adminModuleCards .admin-card");
-    if (cards.length)
-      cards[cards.length - 1].scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+    const cards = document.querySelectorAll('#adminModuleCards .admin-card');
+    if (cards.length) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 100);
 }
 
@@ -6170,43 +6279,93 @@ function renderAdminQuizCards() {
 }
 
 async function deleteAdminQuiz(role, i) {
+  const q = QUESTIONS_BY_ROLE[role][i];
   if (!confirm(`Удалить вопрос ${i + 1}?`)) return;
   const sb = getSupabase();
-  await sb
-    .from("quiz_content")
-    .delete()
-    .eq("role", role)
-    .eq("question_index", i);
+
+  await recordChange('delete_quiz', `${role}:${i}`, {
+    q: q.q, options: [...q.options], correct: q.correct,
+    feedback: q.feedback, module: q.module, role
+  }, null);
+
+  // Удаляем по реальному id из БД, а не по question_index
+  if (q._dbId) {
+    await sb.from('quiz_content').delete().eq('id', q._dbId);
+  } else {
+    await sb.from('quiz_content').delete().eq('role', role).eq('question_index', i);
+  }
+
+  // Убираем из массива
   QUESTIONS_BY_ROLE[role].splice(i, 1);
+
+  // Пересчитываем question_index и sort_order у оставшихся по их _dbId
   const remaining = QUESTIONS_BY_ROLE[role];
   for (let j = i; j < remaining.length; j++) {
-    await sb
-      .from("quiz_content")
-      .update({ question_index: j })
-      .eq("role", role)
-      .eq("question_index", j + 1);
+    if (remaining[j]._dbId) {
+      await sb.from('quiz_content')
+        .update({ question_index: j, sort_order: j })
+        .eq('id', remaining[j]._dbId);
+    }
   }
+
   if (role === currentRole) renderQuiz();
   renderAdminQuizCards();
 }
 
 async function addAdminQuiz(role) {
+  const newIdx = QUESTIONS_BY_ROLE[role].length;
   const newQ = {
-    module: `Модуль · Новый`,
-    q: "Текст нового вопроса",
-    options: ["Вариант A", "Вариант B", "Вариант C", "Вариант D"],
+    module: 'Модуль · Новый',
+    q: 'Текст нового вопроса',
+    options: ['Вариант A', 'Вариант B', 'Вариант C', 'Вариант D'],
     correct: 0,
-    feedback: "Объяснение правильного ответа.",
+    feedback: 'Объяснение правильного ответа.',
   };
-  QUESTIONS_BY_ROLE[role].push(newQ);
+  const sb2 = getSupabase();
+
+  // Находим максимальный question_index в БД для этой роли
+  const { data: existing } = await sb2.from("quiz_content")
+    .select("question_index")
+    .eq("role", role)
+    .order("question_index", { ascending: false })
+    .limit(1);
+  const safeIdx = (existing && existing.length > 0) ? existing[0].question_index + 1 : 0;
+
+  const { data: ins, error } = await sb2.from("quiz_content").upsert({
+    role,
+    question_index: safeIdx,
+    module_tag: newQ.module,
+    question: newQ.q,
+    options: newQ.options,
+    correct_index: newQ.correct,
+    feedback: newQ.feedback,
+    is_practical: false,
+    sort_order: newIdx,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: "role,question_index", ignoreDuplicates: false }).select("id").single();
+
+  if (error) { console.warn("addAdminQuiz error:", error); return; }
+  if (ins) newQ._dbId = ins.id;
+  newQ._questionIndex = safeIdx;
+QUESTIONS_BY_ROLE[role].push(newQ);
+// Синхронизируем sort_order с реальной позицией в массиве
+if (ins) {
+  const sb3 = getSupabase();
+  await sb3.from("quiz_content")
+    .update({ sort_order: newIdx })
+    .eq("id", ins.id);
+}
+
+
+  await recordChange('create_quiz', `${role}:${newIdx}`, null, {
+    q: newQ.q, options: newQ.options, correct: newQ.correct,
+    feedback: newQ.feedback, module: newQ.module, role
+  });
+
   renderAdminQuizCards();
   setTimeout(() => {
-    const cards = document.querySelectorAll("#adminQuizCards .admin-card");
-    if (cards.length)
-      cards[cards.length - 1].scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+    const cards = document.querySelectorAll('#adminQuizCards .admin-card');
+    if (cards.length) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 100);
 }
 
@@ -6243,20 +6402,47 @@ async function saveAdminQuiz(role, i, btnEl) {
   const sb = getSupabase();
   let error;
   try {
+    // Для нового вопроса без _dbId находим безопасный индекс
+    let safeQuestionIndex;
+    if (q._dbId) {
+      // Существующая запись — берём её реальный question_index из БД
+      safeQuestionIndex = q._questionIndex ?? i;
+    } else {
+      // Новая запись — берём max + 1 чтобы не было коллизий
+      const { data: existingIdx } = await sb.from("quiz_content")
+        .select("question_index")
+        .eq("role", role)
+        .order("question_index", { ascending: false })
+        .limit(1);
+      safeQuestionIndex = (existingIdx && existingIdx.length > 0) 
+        ? existingIdx[0].question_index + 1 
+        : 0;
+    }
+
+    const quizPayload = {
+      role,
+      question_index: safeQuestionIndex,
+      module_tag: moduleName || q.module,
+      question,
+      options,
+      correct_index: correct,
+      feedback,
+      is_practical: practical,
+      sort_order: i,
+      updated_at: new Date().toISOString(),
+    };
+    if (q._dbId) quizPayload.id = q._dbId;
+
     ({ error } = await sb.from("quiz_content").upsert(
-      {
-        role,
-        question_index: i,
-        module_tag: moduleName || q.module,
-        question,
-        options,
-        correct_index: correct,
-        feedback,
-        is_practical: practical,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "role,question_index" },
+      quizPayload,
+      { onConflict: "id" },
     ));
+
+    if (!error && !q._dbId) {
+      const { data: inserted } = await sb.from("quiz_content")
+        .select("id").eq("role", role).eq("question_index", i).single();
+      if (inserted) QUESTIONS_BY_ROLE[role][i]._dbId = inserted.id;
+    }
   } finally {
     if (btn) {
       btn.disabled = false;
@@ -6411,32 +6597,45 @@ function renderAdminThreats() {
 }
 
 async function deleteAdminThreat(i) {
-  if (!confirm(`Удалить угрозу "${threatsData[i].title}"?`)) return;
+  const t = threatsData[i];
+  if (!confirm(`Удалить угрозу "${t.title}"?`)) return;
   const sb = getSupabase();
-  if (threatsData[i]._dbId !== undefined) {
-    await sb.from("threats_content").delete().eq("id", threatsData[i]._dbId);
-  }
+
+  await recordChange('delete_threat', `${i}`, {
+    icon: t.icon, title: t.title, desc: t.desc,
+    level: t.level, levelText: t.levelText, _dbId: t._dbId
+  }, null);
+
+  if (t._dbId) await sb.from('threats_content').delete().eq('id', t._dbId);
   threatsData.splice(i, 1);
   renderThreatsSection();
   renderAdminThreats();
 }
 
 async function addAdminThreat() {
-  threatsData.push({
-    icon: "⚡",
-    title: "Новая угроза",
-    desc: "Описание угрозы",
-    level: "level-med",
-    levelText: "● Средний риск",
+  const newIdx = threatsData.length;
+  const newItem = {
+    icon: '⚡', title: 'Новая угроза',
+    desc: 'Описание угрозы', level: 'level-med', levelText: '● Средний риск',
+  };
+  threatsData.push(newItem);
+  const sb3 = getSupabase();
+const { data: insThr } = await sb3.from('threats_content').insert({
+  icon: newItem.icon, title: newItem.title, description: newItem.desc,
+  level: newItem.level, sort_order: newIdx,
+  updated_at: new Date().toISOString(),
+}).select('id').single();
+if (insThr) newItem._dbId = insThr.id;
+
+  await recordChange('create_threat', `${newIdx}`, null, {
+    icon: newItem.icon, title: newItem.title,
+    desc: newItem.desc, level: newItem.level, levelText: newItem.levelText
   });
+
   renderAdminThreats();
   setTimeout(() => {
-    const cards = document.querySelectorAll("#adminSectionThreats .admin-card");
-    if (cards.length)
-      cards[cards.length - 1].scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+    const cards = document.querySelectorAll('#adminSectionThreats .admin-card');
+    if (cards.length) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 100);
 }
 
@@ -6635,33 +6834,47 @@ function renderAdminNews() {
 }
 
 async function deleteAdminNews(i) {
-  if (!confirm(`Удалить новость "${NEWS_ITEMS[i].title}"?`)) return;
+  const item = NEWS_ITEMS[i];
+  if (!confirm(`Удалить новость "${item.title}"?`)) return;
   const sb = getSupabase();
-  const dbId = NEWS_ITEMS[i]._dbId;
-  if (dbId) await sb.from("news_content").delete().eq("id", dbId);
+
+  await recordChange('delete_news', `${i}`, {
+    title: item.title, desc: item.desc, impact: item.impact,
+    date: item.date, cat: item.cat, videoId: item.videoId, _dbId: item._dbId
+  }, null);
+
+  if (item._dbId) await sb.from('news_content').delete().eq('id', item._dbId);
   NEWS_ITEMS.splice(i, 1);
   renderNews();
   renderAdminNews();
 }
 
 async function addAdminNews() {
-  NEWS_ITEMS.push({
-    title: "Новый инцидент",
-    desc: "Описание инцидента",
-    impact: "💥 Последствия",
-    date: new Date().getFullYear().toString(),
-    cat: "Новое",
-    videoId: "",
-    thumb: "",
+  const newIdx = NEWS_ITEMS.length;
+  const newItem = {
+    title: 'Новый инцидент', desc: 'Описание инцидента',
+    impact: '💥 Последствия', date: new Date().getFullYear().toString(),
+    cat: 'Новое', videoId: '', thumb: '',
+  };
+  NEWS_ITEMS.push(newItem);
+  const sb3 = getSupabase();
+const { data: insNews } = await sb3.from('news_content').insert({
+  title: newItem.title, description: newItem.desc,
+  impact: newItem.impact, date: newItem.date,
+  category: newItem.cat, video_id: newItem.videoId,
+  sort_order: newIdx, updated_at: new Date().toISOString(),
+}).select('id').single();
+if (insNews) newItem._dbId = insNews.id;
+
+  await recordChange('create_news', `${newIdx}`, null, {
+    title: newItem.title, desc: newItem.desc, impact: newItem.impact,
+    date: newItem.date, cat: newItem.cat, videoId: newItem.videoId
   });
+
   renderAdminNews();
   setTimeout(() => {
-    const cards = document.querySelectorAll("#adminSectionNews .admin-card");
-    if (cards.length)
-      cards[cards.length - 1].scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+    const cards = document.querySelectorAll('#adminSectionNews .admin-card');
+    if (cards.length) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 100);
 }
 
@@ -6886,29 +7099,43 @@ function renderAdminTips() {
 }
 
 async function deleteAdminTip(i) {
-  if (!confirm(`Удалить совет "${tipsData[i].title}"?`)) return;
+  const tip = tipsData[i];
+  if (!confirm(`Удалить совет "${tip.title}"?`)) return;
   const sb = getSupabase();
-  const dbId = tipsData[i]._dbId;
-  if (dbId) await sb.from("tips_content").delete().eq("id", dbId);
+
+  await recordChange('delete_tip', `${i}`, {
+    icon: tip.icon, title: tip.title, desc: tip.desc, _dbId: tip._dbId
+  }, null);
+
+  if (tip._dbId) await sb.from('tips_content').delete().eq('id', tip._dbId);
   tipsData.splice(i, 1);
   renderTipsSection();
   renderAdminTips();
 }
 
 async function addAdminTip() {
-  tipsData.push({
-    icon: "✨",
-    title: "Новый совет",
-    desc: "Описание совета по безопасности.",
+  const newIdx = tipsData.length;
+  const newItem = {
+    icon: '✨', title: 'Новый совет',
+    desc: 'Описание совета по безопасности.',
+  };
+  tipsData.push(newItem);
+  const sb3 = getSupabase();
+const { data: insTip } = await sb3.from('tips_content').insert({
+  icon: newItem.icon, title: newItem.title,
+  description: newItem.desc, sort_order: newIdx,
+  updated_at: new Date().toISOString(),
+}).select('id').single();
+if (insTip) newItem._dbId = insTip.id;
+
+  await recordChange('create_tip', `${newIdx}`, null, {
+    icon: newItem.icon, title: newItem.title, desc: newItem.desc
   });
+
   renderAdminTips();
   setTimeout(() => {
-    const cards = document.querySelectorAll("#adminSectionTips .admin-card");
-    if (cards.length)
-      cards[cards.length - 1].scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+    const cards = document.querySelectorAll('#adminSectionTips .admin-card');
+    if (cards.length) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 100);
 }
 
@@ -7266,175 +7493,196 @@ function checkAdminAccess() {
 //  LOAD CONTENT FROM DB ON PAGE START
 // ============================================================
 async function loadContentFromDB() {
+  showContentSkeletons();
   const sb = getSupabase();
 
   try {
     // Модули
-    // Модули
-    const { data: modsDB } = await sb.from("modules_content").select("*").order("sort_order");
-    if (modsDB && modsDB.length > 0) {
-      modsDB.forEach((row) => {
-        if (!MODULES_BY_ROLE[row.role]) return;
-        const idx = MODULES_BY_ROLE[row.role].findIndex(
-          (m) => m.num === row.num,
-        );
-        if (idx !== -1) {
-          // Обновляем существующий
-          if (row.title) MODULES_BY_ROLE[row.role][idx].title = row.title;
-          if (row.description)
-            MODULES_BY_ROLE[row.role][idx].desc = row.description;
-          if (row.video_id)
-            MODULES_BY_ROLE[row.role][idx].videoId = row.video_id;
-          if (row.duration)
-            MODULES_BY_ROLE[row.role][idx].duration = row.duration;
-        } else {
-          // Добавляем новый модуль которого нет в дефолтных данных
-          MODULES_BY_ROLE[row.role].push({
-            num: row.num,
-            title: row.title || "Новый модуль",
-            desc: row.description || "",
-            tags: row.tags || ["Базовый", "Лекция"],
-            duration: row.duration || "0:00",
-            videoId: row.video_id || "",
-          });
-        }
-      });
-      // Сортируем по num после добавления
-      Object.keys(MODULES_BY_ROLE).forEach((role) => {
-        MODULES_BY_ROLE[role].sort((a, b) => a.num - b.num);
-      });
+    const { data: modsDB } = await sb.from("modules_content")
+  .select("*").order("sort_order", { ascending: true, nullsFirst: false }).order("id", { ascending: true });
+
+    const roles = Object.keys(MODULES_BY_ROLE);
+    for (const role of roles) {
+      const roleRows = (modsDB || []).filter(r => r.role === role);
+      if (roleRows.length > 0) {
+        MODULES_BY_ROLE[role] = roleRows.map((row, i) => ({
+          num: i + 1,
+          title: row.title || '',
+          desc: row.description || '',
+          tags: row.tags || ['Базовый', 'Лекция'],
+          duration: row.duration || '0:00',
+          videoId: row.video_id || '',
+          _dbId: row.id,
+          _dbNum: row.num,
+        }));
+      } else {
+  // Записей нет — заливаем дефолты в БД
+  const sb2 = getSupabase();
+  for (let i = 0; i < MODULES_BY_ROLE[role].length; i++) {
+    const m = MODULES_BY_ROLE[role][i];
+    const { data: ins } = await sb2.from("modules_content").insert({
+      role, num: m.num, title: m.title, description: m.desc,
+      video_id: m.videoId, duration: m.duration, tags: m.tags,
+      sort_order: i, updated_at: new Date().toISOString(),
+    }).select("id").single();
+    if (ins) {
+      MODULES_BY_ROLE[role][i]._dbId = ins.id;
+      MODULES_BY_ROLE[role][i]._dbNum = m.num;
+    }
+  }
+}
     }
 
-    // Вопросы теста
-    // Вопросы теста
-    const { data: quizDB } = await sb.from("quiz_content").select("*").order("sort_order");
-    if (quizDB && quizDB.length > 0) {
-      quizDB.forEach((row) => {
-        if (!QUESTIONS_BY_ROLE[row.role]) return;
-        const existing = QUESTIONS_BY_ROLE[row.role][row.question_index];
-        if (existing) {
-          // Обновляем существующий
-          if (row.question) existing.q = row.question;
-          if (row.options) existing.options = row.options;
-          if (row.correct_index !== null) existing.correct = row.correct_index;
-          if (row.feedback) existing.feedback = row.feedback;
-        } else {
-          // Добавляем новый вопрос на нужную позицию
-          QUESTIONS_BY_ROLE[row.role][row.question_index] = {
-            module: row.module_tag || "Модуль · Новый",
-            q: row.question || "Текст вопроса",
-            options: row.options || ["A", "B", "C", "D"],
-            correct: row.correct_index ?? 0,
-            feedback: row.feedback || "",
-          };
-        }
-      });
-      // Убираем дыры в массивах (undefined) если question_index не последовательный
-      Object.keys(QUESTIONS_BY_ROLE).forEach((role) => {
-        QUESTIONS_BY_ROLE[role] = QUESTIONS_BY_ROLE[role].filter(Boolean);
-      });
+    // Квиз — БД является единственным источником истины
+    const { data: quizDB } = await sb.from("quiz_content")
+  .select("*").order("sort_order", { ascending: true, nullsFirst: false }).order("id", { ascending: true });
+
+    const quizRoles = Object.keys(QUESTIONS_BY_ROLE);
+    for (const role of quizRoles) {
+      const roleRows = (quizDB || []).filter(r => r.role === role);
+      if (roleRows.length > 0) {
+        QUESTIONS_BY_ROLE[role] = roleRows.map(row => ({
+          module: row.module_tag || '',
+          q: row.question || '',
+          options: row.options || ['A','B','C','D'],
+          correct: row.correct_index ?? 0,
+          feedback: row.feedback || '',
+          practical: row.is_practical || false,
+          _dbId: row.id,
+          _questionIndex: row.question_index,
+        }));
+      } else {
+  // Таблица пуста для этой роли — заливаем дефолты ОДИН РАЗ
+  const sb2 = getSupabase();
+  const defaultQuestions = [...QUESTIONS_BY_ROLE[role]];
+  QUESTIONS_BY_ROLE[role] = [];
+  for (let i = 0; i < defaultQuestions.length; i++) {
+    const q = defaultQuestions[i];
+    const { data: ins } = await sb2.from("quiz_content").insert({
+      role, question_index: i, module_tag: q.module, question: q.q,
+      options: q.options, correct_index: q.correct, feedback: q.feedback,
+      is_practical: q.practical || false,
+      sort_order: i, updated_at: new Date().toISOString(),
+    }).select("id").single();
+    QUESTIONS_BY_ROLE[role].push({ ...q, _dbId: ins?.id, _questionIndex: i });
+  }
+}
     }
 
-    // Угрозы
     // Угрозы — полностью пересобираем из БД если есть данные
     const { data: threatsDB } = await sb
-      .from("threats_content")
-      .select("*")
-      .order("sort_order");
+      .from('threats_content')
+      .select('*')
+      .order('sort_order', { nullsFirst: false })
+      .order('id');
     if (threatsDB && threatsDB.length > 0) {
       const levelTextMap = {
-        "level-high": "● Высокий риск",
-        "level-med": "● Средний риск",
-        "level-low": "● Управляемый риск",
+        'level-high': '● Высокий риск',
+        'level-med': '● Средний риск',
+        'level-low': '● Управляемый риск',
       };
-      // Полностью заменяем массив данными из БД
       threatsData.length = 0;
       threatsDB.forEach((row) => {
         threatsData.push({
           _dbId: row.id,
-          icon: row.icon || "⚡",
-          title: row.title || "",
-          desc: row.description || "",
-          level: row.level || "level-med",
-          levelText: levelTextMap[row.level] || "● Средний риск",
+          icon: row.icon || '⚡',
+          title: row.title || '',
+          desc: row.description || '',
+          level: row.level || 'level-med',
+          levelText: levelTextMap[row.level] || '● Средний риск',
         });
       });
       renderThreatsSection();
-    } else {
-      // Нет записей в БД — проставляем _dbId = undefined для дефолтных
-      threatsData.forEach((t) => {
-        if (t._dbId === undefined) t._dbId = undefined;
-      });
     }
+    else {
+  // Заливаем дефолты в БД
+  const sb2 = getSupabase();
+  for (let i = 0; i < THREATS_DEFAULT.length; i++) {
+    const t = THREATS_DEFAULT[i];
+    const { data: ins } = await sb2.from('threats_content').insert({
+      icon: t.icon, title: t.title, description: t.desc,
+      level: t.level, sort_order: i,
+      updated_at: new Date().toISOString(),
+    }).select('id').single();
+    if (ins) threatsData[i]._dbId = ins.id;
+  }
+}
 
-    // Новости
-    // Новости
+    // Новости — полностью пересобираем из БД
     const { data: newsDB } = await sb
-      .from("news_content")
-      .select("*")
-      .order("sort_order");
+      .from('news_content')
+      .select('*')
+      .order('sort_order', { nullsFirst: false })
+      .order('id');
     if (newsDB && newsDB.length > 0) {
-      newsDB.forEach((row, i) => {
-        if (!NEWS_ITEMS[i]) {
-          // Новая запись — добавляем
-          NEWS_ITEMS.push({
-            _dbId: row.id,
-            title: row.title || "",
-            desc: row.description || "",
-            impact: row.impact || "",
-            date: row.date || "",
-            cat: row.category || "",
-            videoId: row.video_id || "",
-            thumb: `https://img.youtube.com/vi/${row.video_id || ""}/hqdefault.jpg`,
-          });
-        } else {
-          // Обновляем существующую
-          NEWS_ITEMS[i]._dbId = row.id;
-          if (row.title) NEWS_ITEMS[i].title = row.title;
-          if (row.description) NEWS_ITEMS[i].desc = row.description;
-          if (row.impact) NEWS_ITEMS[i].impact = row.impact;
-          if (row.date) NEWS_ITEMS[i].date = row.date;
-          if (row.category) NEWS_ITEMS[i].cat = row.category;
-          if (row.video_id) {
-            NEWS_ITEMS[i].videoId = row.video_id;
-            NEWS_ITEMS[i].thumb =
-              `https://img.youtube.com/vi/${row.video_id}/hqdefault.jpg`;
-          }
-        }
+      // Очищаем массив и пересобираем целиком из БД
+      NEWS_ITEMS.length = 0;
+      newsDB.forEach((row) => {
+        NEWS_ITEMS.push({
+          _dbId: row.id,
+          title: row.title || '',
+          desc: row.description || '',
+          impact: row.impact || '',
+          date: row.date || '',
+          cat: row.category || '',
+          videoId: row.video_id || '',
+          thumb: `https://img.youtube.com/vi/${row.video_id || ''}/hqdefault.jpg`,
+        });
       });
-    }
+    } else {
+  const sb2 = getSupabase();
+  for (let i = 0; i < NEWS_ITEMS.length; i++) {
+    const n = NEWS_ITEMS[i];
+    const { data: ins } = await sb2.from('news_content').insert({
+      title: n.title, description: n.desc, impact: n.impact,
+      date: n.date, category: n.cat, video_id: n.videoId,
+      sort_order: i, updated_at: new Date().toISOString(),
+    }).select('id').single();
+    if (ins) NEWS_ITEMS[i]._dbId = ins.id;
+  }
+}
+    
 
-    // Советы
+    // Советы — полностью пересобираем из БД
     const { data: tipsDB } = await sb
-      .from("tips_content")
-      .select("*")
-      .order("sort_order");
+      .from('tips_content')
+      .select('*')
+      .order('sort_order', { nullsFirst: false })
+      .order('id');
     if (tipsDB && tipsDB.length > 0) {
-      const levelTextMap = {
-        "level-high": "● Высокий риск",
-        "level-med": "● Средний риск",
-        "level-low": "● Управляемый риск",
-      };
-      // Полностью пересобираем из БД как угрозы
       tipsData.length = 0;
       tipsDB.forEach((row) => {
         tipsData.push({
           _dbId: row.id,
-          icon: row.icon || "✨",
-          title: row.title || "",
-          desc: row.description || "",
+          icon: row.icon || '✨',
+          title: row.title || '',
+          desc: row.description || '',
         });
       });
       renderTipsSection();
-    }
+    } else {
+  const sb2 = getSupabase();
+  for (let i = 0; i < TIPS_DEFAULT.length; i++) {
+    const t = TIPS_DEFAULT[i];
+    const { data: ins } = await sb2.from('tips_content').insert({
+      icon: t.icon, title: t.title, description: t.desc,
+      sort_order: i, updated_at: new Date().toISOString(),
+    }).select('id').single();
+    if (ins) tipsData[i]._dbId = ins.id;
+  }
+}
   } catch (e) {
     console.warn("loadContentFromDB error:", e);
+    hidePageLoader();
   }
+
+  
 
   // Рендерим всё с актуальными данными
   renderNews();
   renderModules();
   renderQuiz();
+  hidePageLoader();
 }
 
 // ============================================================
@@ -7951,6 +8199,7 @@ function showPublishFlash(msg, isError = false) {
 }
 
 let currentSessionId = null;
+let _adminLoggedInThisPageLoad = false;
 let historyCache = {};
 
 function getSessionId() {
@@ -7998,33 +8247,69 @@ async function revertChangeById(historyId) {
     btn.style.animation = "authGlow 1.5s ease-in-out infinite";
   }
 
-  // Всегда загружаем свежие данные из БД
-  const { data: row, error } = await sb
-    .from("content_history")
-    .select("*")
-    .eq("id", historyId)
-    .single();
+  try {
+    const { data: row, error } = await sb
+      .from("content_history")
+      .select("*")
+      .eq("id", historyId)
+      .single();
 
-  if (error || !row) {
-    console.warn(
-      "revertChangeById: не удалось загрузить запись",
-      historyId,
-      error,
-    );
+    if (error || !row) {
+      console.warn("revertChangeById: не удалось загрузить запись", historyId, error);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = "↩ Откат";
+        btn.style.animation = "";
+      }
+      showPublishFlash("❌ Запись не найдена в базе данных", true);
+      return;
+    }
+
+    if (!row.before_data || Object.keys(row.before_data).length === 0) {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = "↩ Откат";
+        btn.style.animation = "";
+      }
+      showPublishFlash("❌ Нет данных для отката (before_data пустой)", true);
+      return;
+    }
+
+    await applyContentData(row.content_type, row.content_key, row.before_data);
+
+    await sb
+      .from("content_history")
+      .update({ note: "REVERTED at " + new Date().toISOString() })
+      .eq("id", historyId);
+
+    await sb.from("content_history").insert({
+      session_id: getSessionId(),
+      content_type: row.content_type,
+      content_key: row.content_key,
+      before_data: row.after_data,
+      after_data: row.before_data,
+      changed_at: new Date().toISOString(),
+      note: "REVERT of " + historyId,
+    });
+
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = "✅ Откат выполнен";
+      btn.style.animation = "";
+    }
+
+    showPublishFlash("✅ Откат выполнен успешно");
+    await renderAdminHistory();
+
+  } catch (e) {
+    console.error("revertChangeById error:", e);
     if (btn) {
       btn.disabled = false;
       btn.innerHTML = "↩ Откат";
       btn.style.animation = "";
     }
-    return;
+    showPublishFlash("❌ Ошибка отката: " + e.message, true);
   }
-
-  await revertChange(
-    historyId,
-    row.before_data,
-    row.content_type,
-    row.content_key,
-  );
 }
 
 // Откат одного конкретного изменения
@@ -8064,24 +8349,221 @@ async function revertChange(historyId, beforeData, contentType, contentKey) {
 async function applyContentData(contentType, contentKey, data) {
   const sb = getSupabase();
 
-  if (contentType === "module") {
-    const [role, num] = contentKey.split(":");
-    await sb.from("modules_content").upsert(
-      {
-        role,
-        num: parseInt(num),
-        title: data.title,
-        description: data.desc,
-        video_id: data.videoId,
-        duration: data.duration,
-        tags: data.tags,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "role,num" },
-    );
-    const idx = MODULES_BY_ROLE[role]?.findIndex(
-      (m) => m.num === parseInt(num),
-    );
+  // --- REORDER ---
+  if (contentType === 'reorder_module') {
+    const role = contentKey;
+    if (!data || !data.order) return;
+    const reordered = data.order.map(num => MODULES_BY_ROLE[role].find(m => (m._dbNum || m.num) === num)).filter(Boolean);
+    if (reordered.length === MODULES_BY_ROLE[role].length) {
+      MODULES_BY_ROLE[role] = reordered;
+      MODULES_BY_ROLE[role].forEach((m, i) => { m.num = i + 1; });
+      await Promise.all(
+        MODULES_BY_ROLE[role].map((m, i) =>
+          sb.from('modules_content').update({ sort_order: i }).eq('role', role).eq('num', m._dbNum || m.num)
+        )
+      );
+      if (role === currentRole) renderModules();
+    }
+    return;
+  }
+
+  if (contentType === 'reorder_quiz') {
+    const role = contentKey;
+    if (!data || !data.order) return;
+    const reordered = data.order.map(i => QUESTIONS_BY_ROLE[role][i]).filter(Boolean);
+    if (reordered.length === QUESTIONS_BY_ROLE[role].length) {
+      QUESTIONS_BY_ROLE[role] = reordered;
+      await Promise.all(
+        QUESTIONS_BY_ROLE[role].map((q, i) =>
+          sb.from('quiz_content').update({ sort_order: i }).eq('role', role).eq('question_index', i)
+        )
+      );
+      if (role === currentRole) renderQuiz();
+    }
+    return;
+  }
+
+  if (contentType === 'reorder_threat') {
+    if (!data || !data.order) return;
+    const reordered = data.order.map(id => threatsData.find(t => t._dbId === id)).filter(Boolean);
+    if (reordered.length === threatsData.length) {
+      threatsData.length = 0;
+      reordered.forEach(t => threatsData.push(t));
+      await Promise.all(
+        threatsData.map((t, i) =>
+          t._dbId ? sb.from('threats_content').update({ sort_order: i }).eq('id', t._dbId) : Promise.resolve()
+        )
+      );
+      renderThreatsSection();
+    }
+    return;
+  }
+
+  if (contentType === 'reorder_news') {
+    if (!data || !data.order) return;
+    const reordered = data.order.map(id => NEWS_ITEMS.find(n => n._dbId === id)).filter(Boolean);
+    if (reordered.length === NEWS_ITEMS.length) {
+      NEWS_ITEMS.length = 0;
+      reordered.forEach(n => NEWS_ITEMS.push(n));
+      await Promise.all(
+        NEWS_ITEMS.map((n, i) =>
+          n._dbId ? sb.from('news_content').update({ sort_order: i }).eq('id', n._dbId) : Promise.resolve()
+        )
+      );
+      renderNews();
+    }
+    return;
+  }
+
+  if (contentType === 'reorder_tip') {
+    if (!data || !data.order) return;
+    const reordered = data.order.map(id => tipsData.find(t => t._dbId === id)).filter(Boolean);
+    if (reordered.length === tipsData.length) {
+      tipsData.length = 0;
+      reordered.forEach(t => tipsData.push(t));
+      await Promise.all(
+        tipsData.map((t, i) =>
+          t._dbId ? sb.from('tips_content').update({ sort_order: i }).eq('id', t._dbId) : Promise.resolve()
+        )
+      );
+      renderTipsSection();
+    }
+    return;
+  }
+
+  // --- DELETE (откат = восстановление) ---
+  if (contentType === 'delete_module') {
+    if (!data) return;
+    const { role, num, title, desc, videoId, duration, tags } = data;
+    await sb.from('modules_content').upsert({
+      role, num, title, description: desc, video_id: videoId,
+      duration, tags, updated_at: new Date().toISOString()
+    }, { onConflict: 'role,num' });
+    if (!MODULES_BY_ROLE[role].find(m => m.num === num)) {
+      MODULES_BY_ROLE[role].push({ num, title, desc, tags, duration, videoId });
+      MODULES_BY_ROLE[role].sort((a, b) => a.num - b.num);
+    }
+    if (role === currentRole) renderModules();
+    return;
+  }
+
+  if (contentType === 'delete_quiz') {
+    if (!data) return;
+    const { role, q, options, correct, feedback, module: mod } = data;
+    const idx = QUESTIONS_BY_ROLE[role].length;
+    await sb.from('quiz_content').upsert({
+      role, question_index: idx, module_tag: mod, question: q,
+      options, correct_index: correct, feedback,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'role,question_index' });
+    QUESTIONS_BY_ROLE[role].push({ module: mod, q, options, correct, feedback });
+    if (role === currentRole) renderQuiz();
+    return;
+  }
+
+  if (contentType === 'delete_threat') {
+    if (!data) return;
+    const levelTextMap = { 'level-high': '● Высокий риск', 'level-med': '● Средний риск', 'level-low': '● Управляемый риск' };
+    const { data: inserted } = await sb.from('threats_content').insert({
+      icon: data.icon, title: data.title, description: data.desc,
+      level: data.level, updated_at: new Date().toISOString()
+    }).select('id').single();
+    threatsData.push({
+      _dbId: inserted?.id, icon: data.icon, title: data.title,
+      desc: data.desc, level: data.level,
+      levelText: levelTextMap[data.level] || data.levelText
+    });
+    renderThreatsSection();
+    return;
+  }
+
+  if (contentType === 'delete_news') {
+    if (!data) return;
+    const { data: inserted } = await sb.from('news_content').insert({
+      title: data.title, description: data.desc, impact: data.impact,
+      date: data.date, category: data.cat, video_id: data.videoId,
+      updated_at: new Date().toISOString()
+    }).select('id').single();
+    NEWS_ITEMS.push({
+      _dbId: inserted?.id, title: data.title, desc: data.desc,
+      impact: data.impact, date: data.date, cat: data.cat,
+      videoId: data.videoId,
+      thumb: `https://img.youtube.com/vi/${data.videoId}/hqdefault.jpg`
+    });
+    renderNews();
+    return;
+  }
+
+  if (contentType === 'delete_tip') {
+    if (!data) return;
+    const { data: inserted } = await sb.from('tips_content').insert({
+      icon: data.icon, title: data.title, description: data.desc,
+      updated_at: new Date().toISOString()
+    }).select('id').single();
+    tipsData.push({ _dbId: inserted?.id, icon: data.icon, title: data.title, desc: data.desc });
+    renderTipsSection();
+    return;
+  }
+
+  // --- CREATE (откат = удаление) ---
+  if (contentType === 'create_module') {
+    if (!data) return;
+    const { role, num } = data;
+    await sb.from('modules_content').delete().eq('role', role).eq('num', num);
+    const idx = MODULES_BY_ROLE[role].findIndex(m => m.num === num);
+    if (idx !== -1) MODULES_BY_ROLE[role].splice(idx, 1);
+    MODULES_BY_ROLE[role].forEach((m, i) => { m.num = i + 1; });
+    if (role === currentRole) renderModules();
+    return;
+  }
+
+  if (contentType === 'create_quiz') {
+    if (!data) return;
+    const { role } = data;
+    const idx = QUESTIONS_BY_ROLE[role].length - 1;
+    await sb.from('quiz_content').delete().eq('role', role).eq('question_index', idx);
+    QUESTIONS_BY_ROLE[role].pop();
+    if (role === currentRole) renderQuiz();
+    return;
+  }
+
+  if (contentType === 'create_threat') {
+    const idx = parseInt(contentKey);
+    const item = threatsData[idx];
+    if (item?._dbId) await sb.from('threats_content').delete().eq('id', item._dbId);
+    threatsData.splice(idx, 1);
+    renderThreatsSection();
+    return;
+  }
+
+  if (contentType === 'create_news') {
+    const idx = parseInt(contentKey);
+    const item = NEWS_ITEMS[idx];
+    if (item?._dbId) await sb.from('news_content').delete().eq('id', item._dbId);
+    NEWS_ITEMS.splice(idx, 1);
+    renderNews();
+    return;
+  }
+
+  if (contentType === 'create_tip') {
+    const idx = parseInt(contentKey);
+    const item = tipsData[idx];
+    if (item?._dbId) await sb.from('tips_content').delete().eq('id', item._dbId);
+    tipsData.splice(idx, 1);
+    renderTipsSection();
+    return;
+  }
+
+  // --- ОБЫЧНОЕ РЕДАКТИРОВАНИЕ (существующая логика) ---
+  if (contentType === 'module') {
+    const [role, num] = contentKey.split(':');
+    await sb.from('modules_content').upsert({
+      role, num: parseInt(num), title: data.title,
+      description: data.desc, video_id: data.videoId,
+      duration: data.duration, tags: data.tags,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'role,num' });
+    const idx = MODULES_BY_ROLE[role]?.findIndex(m => m.num === parseInt(num));
     if (idx !== -1 && idx !== undefined) {
       if (data.title) MODULES_BY_ROLE[role][idx].title = data.title;
       if (data.desc) MODULES_BY_ROLE[role][idx].desc = data.desc;
@@ -8089,100 +8571,62 @@ async function applyContentData(contentType, contentKey, data) {
       if (data.duration) MODULES_BY_ROLE[role][idx].duration = data.duration;
     }
     if (role === currentRole) renderModules();
-  } else if (contentType === "quiz") {
-    const [role, i] = contentKey.split(":");
-    await sb.from("quiz_content").upsert(
-      {
-        role,
-        question_index: parseInt(i),
-        module_tag: data.module,
-        question: data.q,
-        options: data.options,
-        correct_index: data.correct,
-        feedback: data.feedback,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "role,question_index" },
-    );
+
+  } else if (contentType === 'quiz') {
+    const [role, i] = contentKey.split(':');
+    await sb.from('quiz_content').upsert({
+      role, question_index: parseInt(i), module_tag: data.module,
+      question: data.q, options: data.options,
+      correct_index: data.correct, feedback: data.feedback,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'role,question_index' });
     if (QUESTIONS_BY_ROLE[role]?.[parseInt(i)]) {
       Object.assign(QUESTIONS_BY_ROLE[role][parseInt(i)], {
-        q: data.q,
-        options: data.options,
-        correct: data.correct,
-        feedback: data.feedback,
-        module: data.module,
+        q: data.q, options: data.options, correct: data.correct,
+        feedback: data.feedback, module: data.module,
       });
     }
     if (role === currentRole) renderQuiz();
-  } else if (contentType === "threat") {
+
+  } else if (contentType === 'threat') {
     const idx = parseInt(contentKey);
-    const levelTextMap = {
-      "level-high": "● Высокий риск",
-      "level-med": "● Средний риск",
-      "level-low": "● Управляемый риск",
-    };
-    await sb.from("threats_content").upsert(
-      {
-        id: idx + 1,
-        icon: data.icon,
-        title: data.title,
-        description: data.desc,
-        level: data.level,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "id" },
-    );
+    const levelTextMap = { 'level-high': '● Высокий риск', 'level-med': '● Средний риск', 'level-low': '● Управляемый риск' };
+    await sb.from('threats_content').upsert({
+      id: threatsData[idx]?._dbId,
+      icon: data.icon, title: data.title, description: data.desc,
+      level: data.level, updated_at: new Date().toISOString()
+    }, { onConflict: 'id' });
     threatsData[idx] = {
-      icon: data.icon,
-      title: data.title,
-      desc: data.desc,
-      level: data.level,
-      levelText: levelTextMap[data.level] || data.levelText || data.level,
+      ...threatsData[idx], icon: data.icon, title: data.title,
+      desc: data.desc, level: data.level,
+      levelText: levelTextMap[data.level] || data.levelText,
     };
     renderThreatsSection();
-  } else if (contentType === "news") {
+
+  } else if (contentType === 'news') {
     const idx = parseInt(contentKey);
-    await sb.from("news_content").upsert(
-      {
-        id: idx + 1,
-        title: data.title,
-        description: data.desc,
-        impact: data.impact,
-        date: data.date,
-        category: data.cat,
-        video_id: data.videoId,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "id" },
-    );
+    await sb.from('news_content').upsert({
+      id: NEWS_ITEMS[idx]?._dbId,
+      title: data.title, description: data.desc, impact: data.impact,
+      date: data.date, category: data.cat, video_id: data.videoId,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'id' });
     NEWS_ITEMS[idx] = {
-      ...NEWS_ITEMS[idx],
-      title: data.title,
-      desc: data.desc,
-      impact: data.impact,
-      date: data.date,
-      cat: data.cat,
+      ...NEWS_ITEMS[idx], title: data.title, desc: data.desc,
+      impact: data.impact, date: data.date, cat: data.cat,
       videoId: data.videoId,
       thumb: `https://img.youtube.com/vi/${data.videoId}/hqdefault.jpg`,
     };
     renderNews();
-  } else if (contentType === "tip") {
+
+  } else if (contentType === 'tip') {
     const idx = parseInt(contentKey);
-    await sb.from("tips_content").upsert(
-      {
-        id: idx + 1,
-        icon: data.icon,
-        title: data.title,
-        description: data.desc,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "id" },
-    );
-    tipsData[idx] = {
-      icon: data.icon,
-      title: data.title,
-      desc: data.desc,
-    };
+    await sb.from('tips_content').upsert({
+      id: tipsData[idx]?._dbId,
+      icon: data.icon, title: data.title, description: data.desc,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'id' });
+    tipsData[idx] = { ...tipsData[idx], icon: data.icon, title: data.title, desc: data.desc };
     renderTipsSection();
   }
 }
@@ -8215,6 +8659,7 @@ async function renderAdminHistory() {
   // Группируем по сессиям
   const sessions = {};
   data.forEach((row) => {
+    if (row.content_type === 'session_revert') return;
     historyCache[row.id] = row;
     if (!sessions[row.session_id]) sessions[row.session_id] = [];
     sessions[row.session_id].push(row);
@@ -8226,6 +8671,22 @@ async function renderAdminHistory() {
     threat: "⚠️ Угроза",
     news: "📰 Новость",
     tip: "💡 Совет",
+    reorder_module: "↕️ Порядок модулей",
+    reorder_quiz: "↕️ Порядок вопросов",
+    reorder_threat: "↕️ Порядок угроз",
+    reorder_news: "↕️ Порядок новостей",
+    reorder_tip: "↕️ Порядок советов",
+    delete_module: "🗑️ Удалён модуль",
+    delete_quiz: "🗑️ Удалён вопрос",
+    delete_threat: "🗑️ Удалена угроза",
+    delete_news: "🗑️ Удалена новость",
+    delete_tip: "🗑️ Удалён совет",
+    create_module: "➕ Добавлен модуль",
+    create_quiz: "➕ Добавлен вопрос",
+    create_threat: "➕ Добавлена угроза",
+    create_news: "➕ Добавлена новость",
+    create_tip: "➕ Добавлен совет",
+    session_revert: "↩️ Откат сессии",
   };
 
   const contentKeyLabel = (type, key) => {
@@ -8249,6 +8710,7 @@ async function renderAdminHistory() {
       const isCurrentSession = sessionId === currentSessionId;
 
       const rowsHTML = rows
+        .filter((row) => row.content_type !== 'session_revert')
         .map((row) => {
           const isReverted = row.note && row.note.startsWith("REVERTED");
           const isRevert = row.note && row.note.startsWith("REVERT of");
@@ -8275,7 +8737,7 @@ async function renderAdminHistory() {
             <div style="font-size:0.72rem;color:var(--text-dim)">${date}</div>
           </div>
           ${
-            !isReverted && !isRevert
+            !isReverted && !isRevert && row.content_type !== 'session_revert'
               ? `
             <div style="display:flex;gap:0.5rem">
               <button onclick="showDiff('${row.id}')" style="
@@ -8348,35 +8810,92 @@ async function renderAdminHistory() {
 
 // Откат всей сессии
 async function revertSession(sessionId) {
-  const btn = document.querySelector(
-    `button[onclick="revertSession('${sessionId}')"]`,
-  );
+  const btn = document.querySelector(`button[onclick="revertSession('${sessionId}')"]`);
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = createAuthLoadingHTML("ОТКАТ");
-    btn.style.animation = "authGlow 1.5s ease-in-out infinite";
+    btn.innerHTML = createAuthLoadingHTML('ОТКАТ');
+    btn.style.animation = 'authGlow 1.5s ease-in-out infinite';
   }
+
   const sb = getSupabase();
-  const { data } = await sb
-    .from("content_history")
-    .select("*")
-    .eq("session_id", sessionId)
-    .is("note", null)
-    .order("changed_at", { ascending: false });
 
-  if (!data || data.length === 0) return;
+  const { data, error } = await sb
+    .from('content_history')
+    .select('*')
+    .eq('session_id', sessionId)
+    .order('changed_at', { ascending: false });
 
-  for (const row of data) {
-    await applyContentData(row.content_type, row.content_key, row.before_data);
-    await sb
-      .from("content_history")
-      .update({
-        note: "REVERTED at " + new Date().toISOString(),
-      })
-      .eq("id", row.id);
+  if (error || !data || data.length === 0) {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '↩ Откатить всю сессию';
+      btn.style.animation = '';
+    }
+    showPublishFlash('❌ Не удалось загрузить историю сессии', true);
+    return;
   }
 
-  renderAdminHistory();
+  // Фильтруем только те записи которые ещё не откатаны
+  const toRevert = data.filter(r => !r.note || (!r.note.startsWith('REVERTED') && !r.note.startsWith('REVERT of')));
+
+  if (toRevert.length === 0) {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '↩ Откатить всю сессию';
+      btn.style.animation = '';
+    }
+    showPublishFlash('ℹ️ Все изменения в сессии уже откатаны', false);
+    return;
+  }
+
+  const errors = [];
+
+  // Откатываем по одному в хронологическом порядке (от новых к старым)
+  for (const row of toRevert) {
+    try {
+      // before_data — это то, что было ДО изменения, применяем его обратно
+      await applyContentData(row.content_type, row.content_key, row.before_data);
+
+      await sb
+        .from('content_history')
+        .update({ note: 'REVERTED at ' + new Date().toISOString() })
+        .eq('id', row.id);
+
+    } catch (e) {
+      console.warn('revertSession item error:', row.id, e);
+      errors.push(`${row.content_type}:${row.content_key} — ${e.message}`);
+    }
+  }
+
+  // Записываем одну запись об откате всей сессии
+  try {
+    await sb.from('content_history').insert({
+      session_id: getSessionId(),
+      content_type: 'session_revert',
+      content_key: sessionId,
+      before_data: { count: toRevert.length },
+      after_data: { reverted: toRevert.map(r => r.id) },
+      changed_at: new Date().toISOString(),
+      note: 'SESSION REVERT of ' + sessionId,
+    });
+  } catch (e) {
+    console.warn('session revert history insert error:', e);
+  }
+
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = errors.length === 0 ? '✅ Откатано' : '⚠️ Частично';
+    btn.style.animation = '';
+  }
+
+  if (errors.length === 0) {
+    showPublishFlash(`✅ Сессия откатана — ${toRevert.length} изменений отменено`);
+  } else {
+    showPublishFlash(`⚠️ Откатано частично. Ошибок: ${errors.length}`, true);
+    console.warn('revertSession errors:', errors);
+  }
+
+  await renderAdminHistory();
 }
 
 // Показывает разницу между было и стало
@@ -8464,7 +8983,7 @@ async function showDiff(historyId) {
   document.body.appendChild(overlay);
 }
 
-function reorderAdminItems(input, type, role, fromIdx) {
+async function reorderAdminItems(input, type, role, fromIdx) {
   let arr;
   if (type === 'module') arr = MODULES_BY_ROLE[role];
   else if (type === 'quiz') arr = QUESTIONS_BY_ROLE[role];
@@ -8475,40 +8994,59 @@ function reorderAdminItems(input, type, role, fromIdx) {
   const toIdx = Math.max(0, Math.min(parseInt(input.value) - 1, arr.length - 1));
   if (toIdx === fromIdx) return;
 
+  const beforeSnapshot = arr.map(item => ({...item}));
+
   const [moved] = arr.splice(fromIdx, 1);
   arr.splice(toIdx, 0, moved);
+
+  const afterSnapshot = arr.map(item => ({...item}));
 
   const sb = getSupabase();
 
   if (type === 'module') {
-    MODULES_BY_ROLE[role].forEach((m, i) => m.num = i + 1);
-    MODULES_BY_ROLE[role].forEach((m, i) => {
-      sb.from('modules_content').update({ sort_order: i }).eq('role', role).eq('num', m.num);
-    });
+    MODULES_BY_ROLE[role].forEach((m, i) => { m.num = i + 1; });
+    await Promise.all(
+      MODULES_BY_ROLE[role].map((m, i) =>
+        sb.from('modules_content').update({ sort_order: i }).eq('role', role).eq('num', m._dbNum || m.num)
+      )
+    );
+    recordChange('reorder_module', role, { order: beforeSnapshot.map(m => m.num) }, { order: afterSnapshot.map(m => m.num) });
     renderAdminModuleCards();
     if (role === currentRole) renderModules();
   } else if (type === 'quiz') {
-    QUESTIONS_BY_ROLE[role].forEach((q, i) => {
-      sb.from('quiz_content').update({ sort_order: i }).eq('role', role).eq('question_index', i);
-    });
+    await Promise.all(
+      QUESTIONS_BY_ROLE[role].map((q, i) =>
+        sb.from('quiz_content').update({ sort_order: i }).eq('role', role).eq('question_index', i)
+      )
+    );
+    recordChange('reorder_quiz', role, { order: beforeSnapshot.map((q,i) => i) }, { order: afterSnapshot.map((q,i) => i) });
     renderAdminQuizCards();
     if (role === currentRole) renderQuiz();
   } else if (type === 'threat') {
-    threatsData.forEach((t, i) => {
-      if (t._dbId) sb.from('threats_content').update({ sort_order: i }).eq('id', t._dbId);
-    });
+    await Promise.all(
+      threatsData.map((t, i) =>
+        t._dbId ? sb.from('threats_content').update({ sort_order: i }).eq('id', t._dbId) : Promise.resolve()
+      )
+    );
+    recordChange('reorder_threat', 'all', { order: beforeSnapshot.map(t => t._dbId) }, { order: afterSnapshot.map(t => t._dbId) });
     renderAdminThreats();
     renderThreatsSection();
   } else if (type === 'news') {
-    NEWS_ITEMS.forEach((n, i) => {
-      if (n._dbId) sb.from('news_content').update({ sort_order: i }).eq('id', n._dbId);
-    });
+    await Promise.all(
+      NEWS_ITEMS.map((n, i) =>
+        n._dbId ? sb.from('news_content').update({ sort_order: i }).eq('id', n._dbId) : Promise.resolve()
+      )
+    );
+    recordChange('reorder_news', 'all', { order: beforeSnapshot.map(n => n._dbId) }, { order: afterSnapshot.map(n => n._dbId) });
     renderAdminNews();
     renderNews();
   } else if (type === 'tip') {
-    tipsData.forEach((t, i) => {
-      if (t._dbId) sb.from('tips_content').update({ sort_order: i }).eq('id', t._dbId);
-    });
+    await Promise.all(
+      tipsData.map((t, i) =>
+        t._dbId ? sb.from('tips_content').update({ sort_order: i }).eq('id', t._dbId) : Promise.resolve()
+      )
+    );
+    recordChange('reorder_tip', 'all', { order: beforeSnapshot.map(t => t._dbId) }, { order: afterSnapshot.map(t => t._dbId) });
     renderAdminTips();
     renderTipsSection();
   }
@@ -8898,4 +9436,100 @@ async function submitPasswordRecovery() {
     // Очищаем токен из URL
     window.history.replaceState({}, document.title, window.location.pathname);
   }, 2000);
+}
+
+function showContentSkeletons() {
+  // Модули
+  const modulesList = document.getElementById('modulesList');
+  if (modulesList) {
+    modulesList.innerHTML = Array(6).fill(0).map(() => `
+      <div class="skeleton-card">
+        <div class="sk-row">
+          <div class="sk-num"></div>
+          <div class="sk-body">
+            <div class="sk-line title"></div>
+            <div class="sk-line wide"></div>
+            <div class="sk-line full"></div>
+            <div class="sk-line short"></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Новости
+  const newsGrid = document.getElementById('newsGrid');
+  if (newsGrid) {
+    newsGrid.innerHTML = Array(6).fill(0).map(() => `
+      <div class="skeleton-card news-card" style="pointer-events:none">
+        <div class="sk-thumb"></div>
+        <div class="sk-line title"></div>
+        <div class="sk-line wide"></div>
+        <div class="sk-line full"></div>
+        <div class="sk-line short"></div>
+      </div>
+    `).join('');
+  }
+
+  // Угрозы
+  const threatsGrid = document.querySelector('.threats-grid');
+  if (threatsGrid) {
+    threatsGrid.innerHTML = Array(6).fill(0).map(() => `
+      <div class="skeleton-card threat-card" style="pointer-events:none">
+        <div class="sk-num" style="width:44px;height:44px;border-radius:50%;margin-bottom:0.75rem"></div>
+        <div class="sk-line title"></div>
+        <div class="sk-line wide"></div>
+        <div class="sk-line full"></div>
+      </div>
+    `).join('');
+  }
+
+  // Советы
+  const tipsGrid = document.querySelector('.tips-grid');
+  if (tipsGrid) {
+    tipsGrid.innerHTML = Array(12).fill(0).map(() => `
+      <div class="skeleton-card tip-card" style="pointer-events:none">
+        <div class="sk-num" style="width:40px;height:40px;border-radius:50%;margin-bottom:0.75rem"></div>
+        <div class="sk-line title"></div>
+        <div class="sk-line wide"></div>
+        <div class="sk-line full"></div>
+      </div>
+    `).join('');
+  }
+
+  // Квиз
+  const quizBody = document.getElementById('quizBody');
+  if (quizBody) {
+    quizBody.innerHTML = `
+      <div class="skeleton-card" style="border:none;padding:0">
+        <div class="sk-line" style="width:30%;height:10px;margin-bottom:1rem;background:rgba(0,212,255,0.1)"></div>
+        <div class="sk-line title" style="width:80%;height:16px"></div>
+        <div class="sk-line wide"></div>
+        ${Array(4).fill(0).map(() => `
+          <div class="skeleton-card" style="margin-top:0.6rem;padding:0.75rem 1rem">
+            <div class="sk-line" style="width:${40 + Math.floor(Math.random()*40)}%;margin:0"></div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+}
+
+function hideContentSkeletons() {
+  // Скелетоны убираются автоматически когда renderNews/renderModules/etc
+  // перезаписывают innerHTML — ничего делать не нужно.
+  // Эта функция оставлена для явности.
+}
+function hidePageLoader() {
+  const loader = document.getElementById('pageLoader');
+  if (!loader) return;
+  
+  const isFirstVisit = !sessionStorage.getItem('ib-visited');
+  
+  if (isFirstVisit) {
+    sessionStorage.setItem('ib-visited', '1');
+    setTimeout(() => loader.classList.add('hidden'), 5000);
+  } else {
+    loader.classList.add('hidden');
+  }
 }
