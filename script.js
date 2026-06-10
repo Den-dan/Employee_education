@@ -9991,10 +9991,66 @@ function hidePageLoader() {
 
   const isFirstVisit = !sessionStorage.getItem("ib-visited");
 
+  const startHeroAnimations = () => {
+    document.querySelector(".shield-icon")?.classList.add("animate");
+    document.querySelector("h1 .line1")?.classList.add("animate");
+    document.querySelector("h1 .line2")?.classList.add("animate");
+  };
+
   if (isFirstVisit) {
     sessionStorage.setItem("ib-visited", "1");
-    setTimeout(() => loader.classList.add("hidden"), 5000);
+    setTimeout(() => {
+      loader.classList.add("hidden");
+      startHeroAnimations();
+    }, 5000);
   } else {
     loader.classList.add("hidden");
+    startHeroAnimations();
   }
 }
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener("click", function (e) {
+    const target = document.querySelector(this.getAttribute("href"));
+    if (!target) return;
+    e.preventDefault();
+    const targetY = target.getBoundingClientRect().top + window.scrollY - 80;
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    const duration = 900;
+    let startTime = null;
+
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+      if (progress < 1) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+  });
+});
+document.querySelector('.nav-logo').addEventListener('click', function(e) {
+  e.preventDefault();
+  const startY = window.scrollY;
+  const duration = 900;
+  let startTime = null;
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const elapsed = timestamp - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    window.scrollTo(0, startY * (1 - easeInOutCubic(progress)));
+    if (progress < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
+});
